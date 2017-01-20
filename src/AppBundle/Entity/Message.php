@@ -6,9 +6,9 @@ use Symfony\Component\Validator\Constraints AS Assert;
 
 /**
  * @ORM\Entity
- * @ORM\Table(name="facture")
+ * @ORM\Table(name="message")
  */
-class Facture
+class Message
 {
     /**
     * @ORM\Column(type="integer")
@@ -22,27 +22,21 @@ class Facture
     * @Assert\NotBlank
     */
     private $date;
-    
+
     /**
-    * @ORM\Column(type="float")
+    * @ORM\Column(type="text")
     * @Assert\NotBlank
     */
-    private $montant;
+    private $mesage;
     
     /**
     * @ORM\Column(type="boolean",options={"default":false})
     * @Assert\NotBlank
     */
-    private $etat;
-    
-    /**
-    * @ORM\Column(type="string",length=200)
-    * @Assert\NotBlank
-    */
-    private $libelle;
+    private $vu;
 
     /**
-    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil",inversedBy="factures")
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil")
     */
     private $profil;
 
@@ -66,32 +60,22 @@ class Facture
         return $this;
     }
 
-    public function getMontant(){
-        return $this->montant;
+    public function getMessage(){
+        return $this->message;
     }
 
-    public function setMontant($montant){
-        $this->montant = $montant;
+    public function setMessage($message){
+        $this->message = $message;
 
         return $this;
     }
 
-    public function getEtat(){
-        return $this->etat;
+    public function getVu(){
+        return $this->vu;
     }
 
-    public function setEtat($etat){
-        $this->etat = $etat;
-
-        return $this;
-    }
-
-    public function getLibelle(){
-        return $this->libelle;
-    }
-
-    public function setLibelle($libelle){
-        $this->libelle = $libelle;
+    public function setVu($vu){
+        $this->vu = $vu;
 
         return $this;
     }

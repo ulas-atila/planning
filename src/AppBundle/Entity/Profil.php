@@ -92,14 +92,14 @@ class Profil
     private $factures;
 
     /**
-    * ORM\OneToMany(targetEntity="AppBundle\Entity\Horaire",mappedBy="profil")
+    * ORM\OneToMany(targetEntity="AppBundle\Entity\Disponibilite",mappedBy="profil")
     */
-    private $disponibilite;
+    private $disponibilites;
 
     /**
-    * ORM\OneToMany(targetEntity="AppBundle\Entity\Horaire",mappedBy="profil")
+    * ORM\OneToMany(targetEntity="AppBundle\Entity\Attribuee",mappedBy="profil")
     */
-    private $heuresAttribuees;
+    private $attribuees;
 
     public function getId(){
         return $this->id;
@@ -227,5 +227,13 @@ class Profil
         $this->login = $login;
 
         return $this;
+    }
+
+    public function getDisponibilites(){
+        return $this->disponibilites;
+    }
+
+    public function getAttribuees(){
+        return $this->attribuees;
     }
 }
