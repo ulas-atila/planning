@@ -3,16 +3,25 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints AS Assert;
+use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="login")
+ * @UniqueEntity("email")
  */
-class Login
+class Login implements UserInterface, \Serializable
 {
     /**
-    * @ORM\Column(type="string",length=40)
+    * @ORM\Column(type="integer")
     * @ORM\Id
+    * @ORM\GeneratedValue(strategy="AUTO")
+    */
+    private $id;
+
+    /**
+    * @ORM\Column(type="string",length=40, unique=true)
     * @Assert\Email
     */
     private $email;
@@ -26,25 +35,17 @@ class Login
     /**
     * @ORM\Column(type="boolean",options={"default":false})
     */
-    private $actif;
-    
-    /**
-    * @ORM\Column(type="boolean",options={"default":false})
-    */
     private $admin;
-    
-    /**
-    * @ORM\Column(type="string",length=15)
-    * @Assert\NotBlank
-    * @Assert\Length(min=15,max=15)
-    */
-    private $cle;
 
     /**
     * @ORM\Column(nullable=true)
     * @ORM\OneToOne(targetEntity="AppBundle\Entity\Profil")
     */
     private $profil;
+
+    public function getId(){
+        return $this->id;
+    }
 
     public function getEmail()
     {
@@ -70,18 +71,6 @@ class Login
         return $this;
     }
 
-    public function getActif()
-    {
-        return $this->actif;
-    }
-
-    public function setActif($actif)
-    {
-        $this->actif = $actif;
-
-        return $this;
-    }
-
     public function getAdmin()
     {
         return $this->admin;
@@ -90,18 +79,6 @@ class Login
     public function setAdmin($admin)
     {
         $this->admin = $admin;
-
-        return $this;
-    }
-
-    public function getCle()
-    {
-        return $this->cle;
-    }
-
-    public function setCle($cle)
-    {
-        $this->cle = $cle;
 
         return $this;
     }
@@ -116,5 +93,42 @@ class Login
         $this->profil = $profil;
 
         return $this;
+    }
+
+    public function getRoles()
+    {
+        return $this->getAdmin() ? array('ROLE_ADMIN') : array('ROLE_ADMI');
+    }
+
+    public function getSalt()
+    {
+        return null;
+    }
+
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials()
+    {
+    }
+
+    public function serialize()
+    {
+        return serialize(array(
+            $this->id,
+            $this->email,
+            $this->password,
+        ));
+    }
+
+    public function unserialize($serialized)
+    {
+        list (
+            $this->id,
+            $this->email,
+            $this->password,
+        ) = unserialize($serialized);
     }
 }
