@@ -22,7 +22,7 @@ class Profil
     * @Assert\NotBlank
     */
     private $nom;
-    
+
     /**
     * @ORM\Column(type="string",length=30)
     * @Assert\NotBlank
