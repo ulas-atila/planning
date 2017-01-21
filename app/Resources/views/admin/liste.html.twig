@@ -2,38 +2,32 @@
 
 {% block content %}
     <div class="row">
-    	<div class="col-md-12">	
-				<div class="panel panel-default chat">
-					<div class="panel-heading" id="accordion"><svg class="glyph stroked two-messages"><use xlink:href="#stroked-two-messages"></use></svg> Chat</div>
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Liste des livreurs</div>
+					<div class="panel-heading"><button class="btn btn-primary">Ajouter un livreur</button></div>
 					<div class="panel-body">
-						<ul>
-							{% for message in messages %}
-								<li class="{% if message.from =="admin"%} left{% else %} right {% endif %} clearfix">
-									<span class="chat-img pull-{% if message.from =="admin"%}left{% else %}right {% endif %} ">
-										<img src="{{ message.photo }}" alt="User Avatar" class="img-circle" width="80" height="80" />
-									</span>
-									<div class="chat-body clearfix">
-										<div class="header">
-											<strong class="primary-font">{{ message.from }}</strong> <small class="text-muted">{{ message.date|date("d/m/Y") }}</small>
-										</div>
-										<p>
-											{{ message.content|e }} 
-										</p>
-									</div>
-								</li>
-						    {% endfor %}
-						</ul>
-					</div>
-					
-					<div class="panel-footer">
-						<div class="input-group">
-							<input id="btn-input" type="text" class="form-control input-md" placeholder="Tapez votre message ici..." />
-							<span class="input-group-btn">
-								<button class="btn btn-success btn-md" id="btn-chat">Envoyer</button>
-							</span>
-						</div>
+						<table data-toggle="table">
+						    <thead>
+						    <tr>
+						        <th data-field="identifiant">Photo</th>
+						        <th data-field="nom">Nom</th>
+						        <th data-field="prenom">Prénom</th>
+						        <th>Actions</th>
+						    </tr>
+						    </thead>
+						    {% for livreur in livreurs %}
+						    <tr>
+						        <td data-field="identifiant"><img src="{{livreur.photo}}" alt="" width="40" height="40"/></td>
+						        <td data-field="nom">{{ livreur.nom|e}}</td>
+						        <td data-field="prenom">{{ livreur.prenom|e}}</td>
+						        <td><svg class=" stroked pencil" style="width:14px;height:14px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
+						    	<svg class=" stroked trash" style="width:14px;height:14px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg></td>
+						    </tr>
+						    {% endfor %}	
+						</table>
 					</div>
 				</div>
-			</div><!--/.col-->
-    </div>
+			</div>
+		</div><!--/.row-->	
 {% endblock %}
