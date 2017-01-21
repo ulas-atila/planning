@@ -35,11 +35,10 @@ class Login implements UserInterface, \Serializable
     /**
     * @ORM\Column(type="boolean",options={"default":false})
     */
-    private $admin;
+    private $admin = false;
 
     /**
-    * @ORM\Column(nullable=true)
-    * @ORM\OneToOne(targetEntity="AppBundle\Entity\Profil")
+    * @ORM\OneToOne(targetEntity="Profil")
     */
     private $profil;
 

@@ -3,10 +3,13 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints AS Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="profil")
+ * @UniqueEntity("email")
  */
 class Profil
 {
@@ -19,70 +22,67 @@ class Profil
 
     /**
     * @ORM\Column(type="string",length=30)
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $nom;
 
     /**
     * @ORM\Column(type="string",length=30)
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $prenom;
     
     /**
     * @ORM\Column(type="date")
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $datedenaissance;
     
     /**
     * @ORM\Column(type="string",length=200)
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $adresse;
     
     /**
-    * @ORM\Column(type="string",length=50)
-    * @Assert\NotBlank
+    * @ORM\Column(type="string",length=50, unique=true)
+    * @Assert\NotBlank(message="Valeur obligatoire")
     * @Assert\Email
     */
     private $email;
     
     /**
     * @ORM\Column(type="string",length=30)
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $telephone;
     
     /**
     * @ORM\Column(type="string",length=14)
-    * @Assert\NotBlank
-    * @Assert\Length(min=14,max=14)    
+    * @Assert\Regex(pattern="/^[0-9]{14}$/", message="Format incorrect") 
     */
     private $siret;
     
     /**
     * @ORM\Column(type="string",length=40)
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $villedelivraison;
     
     /**
     * @ORM\Column(type="date")
-    * @Assert\NotBlank
+    * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $dateentree;
 
     /**
-    * @ORM\Column(type="string",length=30)
-    * @Assert\NotBlank
+    * @ORM\Column(type="string",length=150)
+    * @Assert\File(mimeTypes={ "image/gif", "image/jpeg", "image/png" }, maxSize="500k")
     */
     private $photo;
 
     /**
     * @ORM\Column(type="string",length=23)
-    * @Assert\NotBlank
-    * @Assert\Length(min=23,max=23)
     */
     private $rib;
 
@@ -210,7 +210,7 @@ class Profil
     }
 
     public function setRib($rib){
-        $this->rib = $rib;
+        $this->rib = str_replace(' ', '', $rib);
 
         return $this;
     }
@@ -219,21 +219,39 @@ class Profil
         return $this->factures;
     }
 
-    public function getLogin(){
-        return $this->login;
-    }
-
-    public function setLogin(Login $login){
-        $this->login = $login;
-
-        return $this;
-    }
-
     public function getDisponibilites(){
         return $this->disponibilites;
     }
 
     public function getAttribuees(){
         return $this->attribuees;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validateRIB(ExecutionContextInterface $context, $payload)
+    {
+        if (!$this->isValidRib($this->rib)) {
+            $context->buildViolation('Format incorrect!')
+                ->atPath('rib')
+                ->addViolation();
+        }
+    }
+    private function isValidRib($rib)
+    {
+        if(mb_strlen($rib) !== 23)
+        {
+            return false;
+        }
+        $key = substr($rib,-2);
+        $bank = substr($rib,0,5);
+        $bank = substr($rib,0,5);
+        $branch = substr($rib,5,5);
+        $account = substr($rib,10,11);
+        $account = strtr($account,
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        '12345678912345678923456789');
+        return 97 - bcmod(89*$bank + 15 * $branch + 3 * $account,97) === (int)$key;
     }
 }
