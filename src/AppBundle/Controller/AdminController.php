@@ -258,7 +258,7 @@ class AdminController extends Controller
                 "montant" => "290.45",
                 "etat" => true,
                 "libelle" => "Facture du mois de janvier 2016",
-                "profil" => "Michel Dupont"
+                "profil" => "John Doe"
             ],
             [
                 "id" => "Michel Dupont",
@@ -266,7 +266,7 @@ class AdminController extends Controller
                 "montant" => "290.45",
                 "etat" => true,
                 "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Michel Dupont"
+                "profil" => "Min Ouche"
             ],
             [
                 "id" => "Michel Dupont",
