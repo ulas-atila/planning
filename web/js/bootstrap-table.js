@@ -876,7 +876,7 @@
 
             html.push('<tr',
                 sprintf(' id="%s"', item._id),
-                sprintf(' class="%s"', style.classes || item._class),
+                //sprintf(' class="%s"', style.classes || item._class),
                 sprintf(' data-index="%s"', i),
                 '>'
             );

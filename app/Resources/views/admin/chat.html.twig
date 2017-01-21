@@ -14,7 +14,7 @@
 									</span>
 									<div class="chat-body clearfix">
 										<div class="header">
-											<strong class="primary-font">{{ message.from }}</strong> <small class="text-muted">{{ message.date|date("d/m/Y") }}</small>
+											<strong class="primary-font">{% if message.from !="admin" %}<a href="{{path('modifier_livreur')}}">{{ message.from }}</a>{% else %} {{ message.from }} {% endif %}</strong> <small class="text-muted">{{ message.date|date("d/m/Y") }}</small>
 										</div>
 										<p>
 											{{ message.content|e }} 
