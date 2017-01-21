@@ -15,19 +15,22 @@
 						        <th data-field="identifiant">Intitulé</th>
 						        <th data-field="nom">Date</th>
 						        <th data-field="prenom">Montant</th>
+						        <th data-field="etat">Payée</th>
+
 						        <th>Actions</th>
 						    </tr>
 						    </thead>
 						    {% for facture in factures %}
 						    <tr>
-						        <td data-field="identifiant" style="text-align:center;">Livreur</td>
+						        <td data-field="identifiant" style="text-align:center;">{{facture.profil}}</td>
 						        <td data-field="nom">{{ facture.libelle|e}}</td>
 						        <td data-field="prenom">{{ facture.date|date("d/m/Y") }}</td>
-						        <td data-field="ville">{{ facture.montant|e}}</td>
+						        <td data-field="ville">{{ facture.montant|e}}€</td>
+						        <td data-field="etat">{% if facture.etat %} OUI {% else %} NON {% endif %}</td>
+
 						        <td>
-						        	<a href="{{path('admin_chat')}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
-						        	</a>
-						    		<a href="{{path('modifier_livreur')}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
+						        	<a href="#"><svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg></a>
+						        	<a href="{{path('modifier_livreur')}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
 						        	</a>
 						    		<svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg></td>
 
