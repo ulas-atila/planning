@@ -13,13 +13,11 @@ class DefaultController extends Controller
      */
     public function indexAction(Request $request)
     {
-        $user = $this->getUser();
-        if ($user != null) {
-            if ($user->getAdmin()) {
-                return $this->redirectToRoute('admin_homepage');
-            } else {
-                return $this->redirectToRoute('user_homepage');
-            }
+        $checker = $this->container->get('security.authorization_checker');
+        if ($checker->isGranted('ROLE_ADMIN')) {
+            return $this->redirectToRoute('admin_homepage');
+        } else if ($checker->isGranted('ROLE_USER')){
+            return $this->redirectToRoute('user_homepage');
         }
         $authenticationUtils = $this->get('security.authentication_utils');
 

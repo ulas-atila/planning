@@ -1,40 +1,61 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block content %}
-    <div class="row">
-			<div class="col-lg-12">
-				<div class="panel panel-default">
-					<div class="panel-heading">Liste des livreurs</div>
-					<div class="panel-heading"><a href="{{path('add_livreur')}}"><button class="btn btn-primary">Ajouter un livreur</button></a></div>
-					<div class="panel-body">
-						<table data-toggle="table" data-url="tables/data1.json"  data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-search="true" data-select-item-name="toolbar1" data-pagination="true" data-sort-name="name" data-sort-order="desc">
-						    <thead>
-						    <tr>
-						        <th data-field="identifiant">Photo</th>
-						        <th data-field="nom">Nom</th>
-						        <th data-field="prenom">Prénom</th>
-						        <th data-field="ville">Ville</th>
-						        <th>Actions</th>
-						    </tr>
-						    </thead>
-						    {% for livreur in livreurs %}
-						    <tr>
-						        <td data-field="identifiant" style="text-align:center;"><img src="{{livreur.photo}}" alt="" width="40" height="40"/></td>
-						        <td data-field="nom">{{ livreur.nom|e}}</td>
-						        <td data-field="prenom">{{ livreur.prenom|e}}</td>
-						        <td data-field="ville">{{ livreur.ville|e}}</td>
-						        <td>
-						        	<a href="{{path('admin_chat')}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
-						        	</a>
-						    		<a href="{{path('modifier_livreur')}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
-						        	</a>
-						    		<svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg></td>
+    <div class="row" id="table-list">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Liste des livreurs</div>
+                    <div class="panel-heading"><a href="{{path('add_livreur')}}"><button class="btn btn-primary">Ajouter un livreur</button></a></div>
+                    <div class="panel-body">
+                        <table data-toggle="table" data-url="tables/data1.json"  data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-search="true" data-select-item-name="toolbar1" data-pagination="true" data-sort-name="name" data-sort-order="desc">
+                            <thead>
+                            <tr>
+                                <th data-field="identifiant">Photo</th>
+                                <th data-field="nom">Nom</th>
+                                <th data-field="prenom">Prénom</th>
+                                <th data-field="ville">Ville</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            {% for livreur in livreurs %}
+                            <tr>
+                                <td data-field="identifiant" style="text-align:center;">{% if livreur.photo != "" %}<img src="{{ asset(livreur.photo) }}" alt="" width="40" height="40"/>{% endif %}</td>
+                                <td data-field="nom">{{ livreur.nom|e}}</td>
+                                <td data-field="prenom">{{ livreur.prenom|e}}</td>
+                                <td data-field="ville">{{ livreur.ville|e}}</td>
+                                <td>
+                                    <a href="{{path('admin_chat')}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
+                                    </a>
+                                    <a href="{{ path('edit_livreur', {userId:livreur.id}) }}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
+                                    </a>
+                                    <a class="remove-user" data-id="{{ livreur.id }}" href="#"> <svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg>
+                                    </a>
+                                </td>
 
-						    </tr>
-						    {% endfor %}	
-						</table>
-					</div>
-				</div>
-			</div>
-		</div><!--/.row-->	
+                            </tr>
+                            {% endfor %}    
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->  
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#table-list").on("click", ".remove-user", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var r = confirm("Etes vous sure de supprimer cet utilisateur !");
+                if (r == true) {
+                    $.post( "{{ path('delete_livreur') }}", { user_id: $(this).data('id') } )
+                        .done(function( data ) {
+                            location.reload();
+                        });
+                }
+            });
+        });
+    </script>
 {% endblock %}
