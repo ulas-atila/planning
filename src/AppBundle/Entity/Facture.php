@@ -43,6 +43,7 @@ class Facture
 
     /**
     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil",inversedBy="factures")
+    * @ORM\JoinColumn(nullable=false)
     */
     private $profil;
 

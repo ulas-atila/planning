@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints AS Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\MessageRepository")
  * @ORM\Table(name="message")
  */
 class Message
@@ -18,7 +18,7 @@ class Message
     private $id;
 
     /**
-    * @ORM\Column(type="date")
+    * @ORM\Column(type="datetime")
     * @Assert\NotBlank
     */
     private $date;
@@ -27,18 +27,25 @@ class Message
     * @ORM\Column(type="text")
     * @Assert\NotBlank
     */
-    private $mesage;
+    private $message;
     
     /**
     * @ORM\Column(type="boolean",options={"default":false})
     * @Assert\NotBlank
     */
-    private $vu;
+    private $vu = false;
 
     /**
     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil")
+    * @ORM\JoinColumn(nullable=false)
     */
     private $profil;
+
+    /**
+    * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Login")
+    * @ORM\JoinColumn(nullable=false)
+    */
+    private $login;
 
     public function getId(){
         return $this->id;
@@ -86,6 +93,16 @@ class Message
 
     public function setProfil(Profil $profil){
         $this->profil = $profil;
+
+        return $this;
+    }
+
+    public function getLogin(){
+        return $this->login;
+    }
+
+    public function setLogin(Login $login){
+        $this->login = $login;
 
         return $this;
     }

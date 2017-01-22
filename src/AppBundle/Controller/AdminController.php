@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Profil;
 use AppBundle\Entity\Login;
+use AppBundle\Entity\Message;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,38 +18,60 @@ use Symfony\Component\Form\Extension\Core\Type as FormType;
 class AdminController extends Controller
 {
     /**
-     * @Route("/chat", name="admin_chat")
+     * @Route("/chat/{userId}", name="admin_chat")
      */
-    public function chatAction(Request $request)
+    public function chatAction(Request $request, $userId)
     {
-        $login = $this->getDoctrine()->getRepository('AppBundle:Login')->findOneByEmail('admin@admin.fr');
-        $params = [
-            [
-                "from" => "Toto",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ],
-            [
-                "from" => "admin",
-                "photo" => "http://socialpro.miguelvasquez.net/public/avatar/large_johndoe_18gu2qv.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ],
-            [
-                "from" => "toto",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ]
-        ];
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->findByUserId($userId);
+        $params = [];
+        $em = $this->getDoctrine()->getEntityManager();
+        foreach ($messages as $message) {
+            $livreur = $message->getProfil();
+            $isAdmin = $message->getLogin()->getAdmin();
+            if (!$isAdmin && !$message->getVu()) {
+                $message->setVu(true);
+            }
+            $params[] = [
+                "from" => $isAdmin ? "admin" : $livreur->getPrenom() . " " . $livreur->getNom(),
+                "photo" => $isAdmin ? "" : ($livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : ""),
+                "content" => $message->getMessage(),
+                "date" => $message->getDate(),
+            ];
+        }
+        $em->flush();
 
         // replace this example code with whatever you need
         return $this->render('admin/chat.html.twig', [
-            "messages" => $params
+            "messages" => $params,
+            "user_id" => $userId
         ]);
     }
 
+    /**
+     * @Route("/chat/{userId}/ajouter", name="admin_chat_add")
+     * @Method({"POST"})
+     */
+    public function chatAddAction(Request $request, $userId)
+    {
+        $messageText = $request->request->get('message');
+        if ($messageText == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+        $profil = $this->getDoctrine()->getRepository('AppBundle:Profil')->find($userId);
+        if ($profil == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+        $message = new Message();
+        $message->setDate(new \DateTime());
+        $message->setProfil($profil);
+        $message->setLogin($this->getUser());
+        $message->setMessage($messageText);
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->persist($message);
+        $em->flush();
+
+        return new Response("ok", 200);
+    }
 
     /**
      * @Route("/livreurs", name="admin_list")
@@ -74,10 +97,10 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/livreur/ajouter", name="add_livreur")
+     * @Route("/livreur/ajouter", name="add_livreur", defaults={"userId": null})
      * @Route("/livreur/modifier/{userId}", name="edit_livreur")
      */
-    public function addLivreurAction(Request $request, $userId = null)
+    public function addLivreurAction(Request $request, $userId)
     {
         $profil;
         if ($userId === null) {
@@ -276,30 +299,19 @@ class AdminController extends Controller
      */
     public function messagerieAction(Request $request)
     {
-        $params = [
-            [
-                "from" => "Michel Dupont",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
-                "date" => new \DateTime(),
-                "vu" => true
-            ],
-            [
-                "from" => "Jean-Michel Ulas",
-                "photo" => "http://socialpro.miguelvasquez.net/public/avatar/large_johndoe_18gu2qv.jpg",
-                "content" => "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-                "date" => new \DateTime(),
-                "vu" => true
-            ],
-            [
-                "from" => "John Doe",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Entre toi et moi il y a un produit qui s'appelle un produit, et c'est un produit qui s'appelle l'oxygène, alors si tu fais ça (inspiration/expiration) comme ça, tu vis, mais si je tue l'oxygène comme sur la lune, tu meurs !",
-                "date" => new \DateTime(),
-                "vu" => false
-            ]
-        ];
-
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->findLasts();
+        $params = [];
+        foreach ($messages as $message) {
+            $livreur = $message->getProfil();
+            $params[] = [
+                "livreur_id" => $livreur->getId(),
+                "from" => $livreur->getPrenom() . " " . $livreur->getNom(),
+                "photo" => $livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : "",
+                "content" => $message->getMessage(),
+                "date" => $message->getDate(),
+                "vu" => $message->getLogin()->getAdmin() || $message->getVu()
+            ];
+        }
         
         // replace this example code with whatever you need
         return $this->render('admin/messagerie.html.twig', [

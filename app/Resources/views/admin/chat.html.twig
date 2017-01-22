@@ -2,38 +2,70 @@
 
 {% block content %}
     <div class="row">
-    	<div class="col-md-12">	
-				<div class="panel panel-default chat">
-					<div class="panel-heading" id="accordion"><svg class="glyph stroked two-messages"><use xlink:href="#stroked-two-messages"></use></svg> Chat</div>
-					<div class="panel-body">
-						<ul>
-							{% for message in messages %}
-								<li class="{% if message.from =="admin"%} left{% else %} right {% endif %} clearfix">
-									<span class="chat-img pull-{% if message.from =="admin"%}left{% else %}right {% endif %} ">
-										<img src="{{ message.photo }}" alt="User Avatar" class="img-circle" width="80" height="80" />
-									</span>
-									<div class="chat-body clearfix">
-										<div class="header">
-											<strong class="primary-font">{% if message.from !="admin" %}<a href="{{path('modifier_livreur')}}">{{ message.from }}</a>{% else %} {{ message.from }} {% endif %}</strong> <small class="text-muted">{{ message.date|date("d/m/Y") }}</small>
-										</div>
-										<p>
-											{{ message.content|e }} 
-										</p>
-									</div>
-								</li>
-						    {% endfor %}
-						</ul>
-					</div>
-					
-					<div class="panel-footer">
-						<div class="input-group">
-							<input id="btn-input" type="text" class="form-control input-md" placeholder="Tapez votre message ici..." />
-							<span class="input-group-btn">
-								<button class="btn btn-success btn-md" id="btn-chat">Envoyer</button>
-							</span>
-						</div>
-					</div>
-				</div>
-			</div><!--/.col-->
+        <div class="col-md-12"> 
+                <div class="panel panel-default chat">
+                    <div class="panel-heading" id="accordion"><svg class="glyph stroked two-messages"><use xlink:href="#stroked-two-messages"></use></svg> Chat</div>
+                    <div class="panel-body">
+                        <ul>
+                            {% for message in messages %}
+                                <li class="{% if message.from =="admin"%} left{% else %} right {% endif %} clearfix">
+                                    <span class="chat-img pull-{% if message.from =="admin"%}left{% else %}right {% endif %} ">
+                                        {% if message.photo != "" %}<img src="{{ asset(message.photo) }}" alt="" width="80" height="80"/>{% endif %}
+                                    </span>
+                                    <div class="chat-body clearfix">
+                                        <div class="header">
+                                            <strong class="primary-font">{% if message.from !="admin" %}<a href="{{path('edit_livreur', {userId: user_id})}}">{{ message.from }}</a>{% else %} {{ message.from }} {% endif %}</strong> <small class="text-muted">{{ message.date|date("d/m/Y") }}</small>
+                                        </div>
+                                        <p>
+                                            {{ message.content|e }} 
+                                        </p>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    
+                    <div class="panel-footer">
+                        <div class="input-group">
+                            <input id="btn-input" type="text" class="form-control input-md" placeholder="Tapez votre message ici..." />
+                            <span class="input-group-btn">
+                                <button class="btn btn-success btn-md" id="btn-chat">Envoyer</button>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div><!--/.col-->
     </div>
+{% endblock %}
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            var sendMessage = function() {
+                if ($('#btn-input').prop('disabled') || $('#btn-input').val().trim() == "") {
+                    return;
+                }
+                $('#btn-chat').prop('disabled',true);
+                $('#btn-input').prop('disabled',true);
+                $.post( "{{ path('admin_chat_add', {userId: user_id }) }}", { message: $('#btn-input').val().trim() } )
+                    .done(function( data ) {
+                        location.reload();
+                    })
+                    .fail(function() {
+                        alert( "Une erreur est survenue. Veuillez recommencer plus tard ou contactez notre service client." );
+                        $('#btn-chat').prop('disabled',false);
+                        $('#btn-input').prop('disabled',false);
+                    });
+            }
+            $("#btn-chat").on("click", function (e) {
+                sendMessage();
+            });
+            $("#btn-input").on('keyup', function (e) {
+                if (e.keyCode == 13) {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
 {% endblock %}
