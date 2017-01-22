@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 
 {% block content %}
-    <div class="row">
+    <div class="row" id="table-list">
 			<div class="col-lg-12">
 				<div class="panel panel-default">
 					<div class="panel-heading">Liste des factures</div>
@@ -29,10 +29,12 @@
 						        <td data-field="etat">{% if facture.etat %} OUI {% else %} NON {% endif %}</td>
 
 						        <td>
-						        	<a href="#"><svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg></a>
-						        	<a href="{{path('admin_edit_facture')}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
+						        	{% if not facture.etat %}
+						        	<a class="validate-facture" data-id="{{ facture.id }}" href="#"><svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg></a>
+						        	{% endif %}
+						        	<a href="{{path('admin_edit_facture', {factureId: facture.id})}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
 						        	</a>
-						    		<svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg></td>
+						    		<a class="remove-facture" data-id="{{ facture.id }}" href="#"> <svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg>
 
 						    </tr>
 						    {% endfor %}	
@@ -41,4 +43,38 @@
 				</div>
 			</div>
 		</div><!--/.row-->	
+{% endblock %}
+
+
+{% block javascript %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $("#table-list").on("click", ".remove-facture", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var r = confirm("Etes vous sure de supprimer cette facture !");
+                if (r == true) {
+                    $.post( "{{ path('delete_facture') }}", { facture_id: $(this).data('id') } )
+                        .done(function( data ) {
+                            location.reload();
+                        })
+                        .fail(function() {
+                            alert( "Une erreur est survenue. Veuillez recommencer plus tard ou contactez notre service client." );
+                        });
+                }
+            });
+            $("#table-list").on("click", ".validate-facture", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                $.post( "{{ path('validate_facture') }}", { facture_id: $(this).data('id') } )
+                    .done(function( data ) {
+                        location.reload();
+                    })
+                    .fail(function() {
+                        alert( "Une erreur est survenue. Veuillez recommencer plus tard ou contactez notre service client." );
+                    });
+            });
+        });
+    </script>
 {% endblock %}

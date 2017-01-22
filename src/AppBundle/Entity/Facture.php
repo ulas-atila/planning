@@ -31,9 +31,8 @@ class Facture
     
     /**
     * @ORM\Column(type="boolean",options={"default":false})
-    * @Assert\NotBlank
     */
-    private $etat;
+    private $etat = false;
     
     /**
     * @ORM\Column(type="string",length=200)

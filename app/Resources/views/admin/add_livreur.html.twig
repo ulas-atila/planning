@@ -25,7 +25,7 @@
     <div class="row">
             <div class="col-lg-12">
                 <div class="panel panel-default">
-                    <div class="panel-heading">Ajout d'un nouveau livreur</div>
+                    <div class="panel-heading">{% if isNew %}Ajout d'un nouveau livreur{% else %}Modification d'un livreur{% endif %}</div>
                     <div class="panel-body">
                         {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
                             <fieldset>

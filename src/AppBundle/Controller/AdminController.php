@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Entity\Profil;
 use AppBundle\Entity\Login;
 use AppBundle\Entity\Message;
+use AppBundle\Entity\Facture;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -17,6 +18,31 @@ use Symfony\Component\Form\Extension\Core\Type as FormType;
  */
 class AdminController extends Controller
 {
+    /**
+     * @Route("/messagerie", name="messagerie")
+     */
+    public function messagerieAction(Request $request)
+    {
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->findLasts();
+        $params = [];
+        foreach ($messages as $message) {
+            $livreur = $message->getProfil();
+            $params[] = [
+                "livreur_id" => $livreur->getId(),
+                "from" => $livreur->getPrenom() . " " . $livreur->getNom(),
+                "photo" => $livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : "",
+                "content" => $message->getMessage(),
+                "date" => $message->getDate(),
+                "vu" => $message->getLogin()->getAdmin() || $message->getVu()
+            ];
+        }
+        
+        // replace this example code with whatever you need
+        return $this->render('admin/messagerie.html.twig', [
+            "messages" => $params
+         ]);
+    }
+
     /**
      * @Route("/chat/{userId}", name="admin_chat")
      */
@@ -153,7 +179,8 @@ class AdminController extends Controller
         
         // replace this example code with whatever you need
         return $this->render('admin/add_livreur.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'isNew' => $userId === null
         ]);
     }
 
@@ -244,199 +271,133 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/facture/ajouter", name="admin_add_facture")
-     */
-    public function addfactureAction(Request $request)
-    {
-        $params = [
-            [
-                "nom" => "Ouche",
-                "prenom" => "Min",
-                "id" => 1
-            ],
-            [
-                "nom" => "Edge",
-                "prenom" => "Lee",
-                "id" => 4
-            ],
-            [
-                "nom" => "Nano",
-                "prenom" => "Teknologik93",
-                "id" => 2
-            ]
-            
-        ];
-        
-        // replace this example code with whatever you need
-        return $this->render('admin/add_facture.html.twig', [
-            "livreurs" => $params]);
-    }
-
-
-    /**
-     * @Route("/facture/modifier", name="admin_edit_facture")
-     */
-    public function editfactureAction(Request $request)
-    {
-        $params = [
-            [
-                "nom" => "Couchette",
-                "prenom" => "Lee",
-                "id" => 1
-            ],
-            
-        ];
-        
-        // replace this example code with whatever you need
-        return $this->render('admin/edit_facture.html.twig', [
-            "livreurs" => $params]);
-    }
-
-
-
-    /**
-     * @Route("/messagerie", name="messagerie")
-     */
-    public function messagerieAction(Request $request)
-    {
-        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->findLasts();
-        $params = [];
-        foreach ($messages as $message) {
-            $livreur = $message->getProfil();
-            $params[] = [
-                "livreur_id" => $livreur->getId(),
-                "from" => $livreur->getPrenom() . " " . $livreur->getNom(),
-                "photo" => $livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : "",
-                "content" => $message->getMessage(),
-                "date" => $message->getDate(),
-                "vu" => $message->getLogin()->getAdmin() || $message->getVu()
-            ];
-        }
-        
-        // replace this example code with whatever you need
-        return $this->render('admin/messagerie.html.twig', [
-            "messages" => $params
-         ]);
-    }
-
-    /**
      * @Route("/factures", name="factures")
      */
     public function factureAction(Request $request)
     {
-
-
-        $params = [
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture du mois de janvier 2016",
-                "profil" => "John Doe"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Michel Dupont",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Michel Dupont"
-            ]
-        ];
-
+        $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findAll();
+        $params = [];
+        foreach ($factures as $facture) {
+            $params[] = [
+                "id" => $facture->getId(),
+                "date" => $facture->getDate(),
+                "montant" => $facture->getMontant(),
+                "etat" => $facture->getEtat(),
+                "libelle" => $facture->getLibelle(),
+                "profil" => $facture->getProfil()->getNom() . " " . $facture->getProfil()->getPrenom()
+            ];
+        }
         
         // replace this example code with whatever you need
         return $this->render('admin/liste_factures.html.twig', [
             "factures" => $params
          ]);
+    }
+
+    /**
+     * @Route("/facture/ajouter", name="admin_add_facture", defaults={"factureId": null})
+     * @Route("/facture/modifier/{factureId}", name="admin_edit_facture")
+     */
+    public function addFactureAction(Request $request, $factureId)
+    {
+        $facture;
+        if ($factureId === null) {
+            $facture = new Facture();
+        } else {
+            $facture = $this->getDoctrine()
+                ->getRepository('AppBundle:Facture')
+                ->find($factureId);
+            if ($facture === null) {
+                $facture = new Facture();
+            }
+        }
+        $facture->setDate(new \DateTime());
+        $form = $this->createFactureForm($facture);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($facture);
+            $em->flush();
+
+            return $this->redirectToRoute('factures');
+        }
+        
+        return $this->render('admin/add_facture.html.twig', [
+            'form' => $form->createView(),
+            'isNew' => $factureId === null
+        ]);
+    }
+
+    private function createFactureForm(Facture $facture)
+    {
+        $form = $this->createFormBuilder($facture)
+            ->add('profil', FormType\ChoiceType::class, [
+                'choices' => $this->getDoctrine()->getRepository('AppBundle:Profil')->findIndexed(),
+                'label' => 'Livreur'
+            ])
+            ->add('libelle', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Intitulé de la facture'],
+                'label' => 'Intitulé'
+            ])
+            ->add('montant', FormType\MoneyType::class, [
+                'attr' => ['placeholder' => 'Montant en euros'],
+                'label' => 'Montant',
+                'currency' => null
+            ])
+            ->getForm();
+        ;
+
+        return $form;
+    }
+
+    /**
+     * @Route("/facture/supprimer", name="delete_facture")
+     * @Method({"POST"})
+     */
+    public function deleteFactureAction(Request $request)
+    {
+        $facture_id = $request->request->get('facture_id');
+
+        if ($facture_id == null) {
+            throw $this->createNotFoundException('Facture does not exist');
+        }
+
+        $facture = $this->getDoctrine()->getRepository('AppBundle:Facture')->find($facture_id);
+        if ($facture == null) {
+            throw $this->createNotFoundException('Facture does not exist');
+        }
+
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->remove($facture);
+        $em->flush();
+
+        return new Response("ok", 200);
+    }
+    
+    /**
+     * @Route("/facture/valider", name="validate_facture")
+     * @Method({"POST"})
+     */
+    public function validateFactureAction(Request $request)
+    {
+        $facture_id = $request->request->get('facture_id');
+
+        if ($facture_id == null) {
+            throw $this->createNotFoundException('Facture does not exist');
+        }
+
+        $facture = $this->getDoctrine()->getRepository('AppBundle:Facture')->find($facture_id);
+        if ($facture == null) {
+            throw $this->createNotFoundException('Facture does not exist');
+        }
+
+        $facture->setEtat(true);
+
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->flush();
+
+        return new Response("ok", 200);
     }
 }

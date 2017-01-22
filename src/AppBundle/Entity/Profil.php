@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\ProfilRepository")
  * @ORM\Table(name="profil")
  * @UniqueEntity("email")
  */
