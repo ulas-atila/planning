@@ -6,6 +6,11 @@
 				<div class="panel panel-default">
 					<div class="panel-heading">Planning</div>
 					<div class="panel-body">
+						<form method="post" action="">
+                            <label style="display:inline-block;margin-right:30px;">Séléctionner un jour de la semaine</label><input type="date" name="jour"> 
+                            
+                           <a href="{{path('add_livreur')}}"><button class="btn btn-primary">Afficher la semaine correspondante</button></a>
+                        </form>
 						<form method"post" action="">
 							<table data-toggle="table">
 							    <thead>
@@ -23,26 +28,26 @@
 
 							    <tr>
 							    		<td>Livraisons du midi</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
+							    		<td> <input type="checkbox" name="lundi_midi" value="lundi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="mardi_midi" value="mardi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="mercredi_midi" value="mercredi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="jeudi_midi" value="jeudi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="vendredi_midi" value="vendredi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="samedi_midi" value="samedi_midi"> Disponible.</td>
+							    		<td> <input type="checkbox" name="dimanche_midi" value="dimanche_midi"> Disponible.</td>
 							    </tr>
 							    <tr>
 							    		<td>Livraisons du soir</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
-							    		<td>Disponible ?</td>
+							    		<td> <input type="checkbox" name="lundi_soir" value="lundi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="mardi_soir" value="mardi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="mercredi_soir" value="mercredi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="jeudi_soir" value="jeudi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="vendredi_soir" value="vendredi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="samedi_soir" value="samedi_soir"> Disponible.</td>
+							    		<td> <input type="checkbox" name="dimanche_soir" value="dimanche_soir"> Disponible.</td>
 							    </tr>
 							</table>
-							<button type="submit" class="btn btn-default btn-md">Valider mes disponibilités</button>
+							<button type="submit" class="btn btn-default btn-md pull-right">Valider mes disponibilités</button>
 						</form>
 					</div>
 				</div>
