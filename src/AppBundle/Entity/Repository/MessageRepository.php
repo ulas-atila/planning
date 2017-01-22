@@ -15,7 +15,7 @@ class MessageRepository extends EntityRepository
                     "SELECT MAX(m2.date) FROM AppBundle:Message m2 WHERE m2.profil=m.profil"
                 )
             )
-            ->orderBy('m.date', 'ASC');
+            ->orderBy('m.date', 'DESC');
 
         return $qb->getQuery()->execute();
     }
@@ -30,5 +30,17 @@ class MessageRepository extends EntityRepository
             ->setParameter(1, $userId);
 
         return $qb->getQuery()->execute();
+    }
+
+    public function countAdminNonLu()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('COUNT(m)')
+            ->from('AppBundle:Message', 'm')
+            ->innerJoin('m.login', 'l')
+            ->where('m.vu = false')
+            ->andWhere('l.admin = false');
+        return intval($qb->getQuery()->execute()[0][1]);
     }
 }
