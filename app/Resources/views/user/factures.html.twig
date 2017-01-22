@@ -6,14 +6,14 @@
                 <div class="panel panel-default">
                     <div class="panel-heading">Liste des factures</div>
                     <div class="panel-body">
-                        <form method="post" action="">
-                            <label style="display:inline-block;margin-right:30px;">Du</label><input type="date" name="date_debut"> 
-                            <label style="display:inline-block;margin-right:30px;margin-left:30px;">Au</label><input type="date" name="date_fin">
+                        <form method="post" action="{{ path('user_factures') }}">
+                            <label style="display:inline-block;margin-right:30px;"">Du</label><input type="date" name="date_debut" value="{{ dateDebut|date('Y-m-d') }}"> 
+                            <label style="display:inline-block;margin-right:30px;margin-left:30px;"">Au</label><input type="date" name="date_fin" value="{{ dateFin|date('Y-m-d') }}">
                            <a href="{{path('add_livreur')}}"><button class="btn btn-primary">Afficher les factures à ces dates</button></a>
+                        </form>
                         <table data-toggle="table" data-url="tables/data1.json"  data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-search="true" data-select-item-name="toolbar1" data-pagination="true" data-sort-name="name" data-sort-order="desc">
                             <thead>
                             <tr>
-
                                 <th data-field="livreur">Livreur</th>
                                 <th data-field="identifiant">Intitulé</th>
                                 <th data-field="nom">Date</th>
@@ -29,7 +29,6 @@
                                 <td data-field="ville">{{ facture.montant|e}}€</td>
                                 <td>
                                     <a href="#"><svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td>
-
                             </tr>
                             {% endfor %}    
                         </table>
