@@ -231,6 +231,49 @@ class AdminController extends Controller
         return new Response("ok", 200);
     }
 
+
+    /**
+     * @Route("/planning", name="admin_planning")
+     */
+    public function planningAction(Request $request)
+    {
+        
+        // replace this example code with whatever you need
+        return $this->render('admin/planning.html.twig', [
+         ]);
+    }
+
+    /**
+     * @Route("/facture/ajouter", name="admin_add_facture")
+     */
+    public function addfactureAction(Request $request)
+    {
+        $params = [
+            [
+                "nom" => "Ouche",
+                "prenom" => "Min",
+                "id" => 1
+            ],
+            [
+                "nom" => "Edge",
+                "prenom" => "Lee",
+                "id" => 4
+            ],
+            [
+                "nom" => "Nano",
+                "prenom" => "Teknologik93",
+                "id" => 2
+            ]
+            
+        ];
+        
+        // replace this example code with whatever you need
+        return $this->render('admin/add_facture.html.twig', [
+            "livreurs" => $params]);
+    }
+
+
+
     /**
      * @Route("/messagerie", name="messagerie")
      */
@@ -284,7 +327,7 @@ class AdminController extends Controller
                 "id" => "Michel Dupont",
                 "date" => new \DateTime(),
                 "montant" => "290.45",
-                "etat" => true,
+                "etat" => false,
                 "libelle" => "Facture septembre/octobre",
                 "profil" => "Michel Dupont"
             ]

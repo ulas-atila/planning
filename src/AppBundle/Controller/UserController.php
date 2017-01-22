@@ -21,4 +21,58 @@ class UserController extends Controller
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
         ]);
     }
+
+
+    /**
+     * @Route("/chat", name="user_messagerie")
+     */
+    public function chatAction(Request $request)
+    {
+        $login = $this->getDoctrine()->getRepository('AppBundle:Login')->findOneByEmail('admin@admin.fr');
+        $params = [
+            [
+                "from" => "Toto",
+                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
+                "content" => "Mon Message",
+                "date" => new \DateTime()
+            ],
+            [
+                "from" => "admin",
+                "photo" => "http://socialpro.miguelvasquez.net/public/avatar/large_johndoe_18gu2qv.jpg",
+                "content" => "Mon Message",
+                "date" => new \DateTime()
+            ],
+            [
+                "from" => "toto",
+                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
+                "content" => "Mon Message",
+                "date" => new \DateTime()
+            ]
+        ];
+
+        // replace this example code with whatever you need
+        return $this->render('user/chat.html.twig', [
+            "messages" => $params
+        ]);
+    }
+
+
+
+
+    /**
+     * @Route("/planning", name="user_planning")
+     */
+    public function planningAction(Request $request)
+    {
+        
+        // replace this example code with whatever you need
+        return $this->render('user/planning.html.twig', [
+         ]);
+    }
+
+
+
+
+
+
 }
