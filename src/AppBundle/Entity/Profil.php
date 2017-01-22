@@ -76,7 +76,7 @@ class Profil
     private $dateentree;
 
     /**
-    * @ORM\Column(type="string",length=150)
+    * @ORM\Column(type="string",length=150, nullable=true)
     * @Assert\File(mimeTypes={ "image/gif", "image/jpeg", "image/png" }, maxSize="500k")
     */
     private $photo;
@@ -90,6 +90,11 @@ class Profil
     * @ORM\OneToMany(targetEntity="AppBundle\Entity\Facture",mappedBy="profil")
     */
     private $factures;
+    
+    /**
+    * @ORM\Column(type="boolean",options={"default":true})
+    */
+    private $active = true;
 
     /**
     * ORM\OneToMany(targetEntity="AppBundle\Entity\Disponibilite",mappedBy="profil")
@@ -201,6 +206,16 @@ class Profil
 
     public function setPhoto($photo){
         $this->photo = $photo;
+
+        return $this;
+    }
+
+    public function getActive(){
+        return $this->active;
+    }
+
+    public function setActive($active){
+        $this->active = $active;
 
         return $this;
     }

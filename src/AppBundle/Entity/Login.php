@@ -96,7 +96,13 @@ class Login implements UserInterface, \Serializable
 
     public function getRoles()
     {
-        return $this->getAdmin() ? array('ROLE_ADMIN') : array('ROLE_ADMI');
+        if ($this->getAdmin()) {
+            return ['ROLE_ADMIN'];
+        } else if ($this->getProfil() && $this->getProfil()->getActive()) {
+            return ['ROLE_USER'];
+        }
+
+        return [];
     }
 
     public function getSalt()

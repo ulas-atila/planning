@@ -4,9 +4,11 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Profil;
 use AppBundle\Entity\Login;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type as FormType;
 
 /**
@@ -20,9 +22,6 @@ class AdminController extends Controller
     public function chatAction(Request $request)
     {
         $login = $this->getDoctrine()->getRepository('AppBundle:Login')->findOneByEmail('admin@admin.fr');
-        var_dump($login);
-        var_dump($login->getProfil());
-        die();
         $params = [
             [
                 "from" => "Toto",
@@ -56,29 +55,17 @@ class AdminController extends Controller
      */
     public function listAction(Request $request)
     {
-        $params = [
-            [
-                "id" => "1",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "prenom" => "John",
-                "nom" => "Doe",
-                "ville" => "Milly-La-Forêt"
-            ],
-            [
-                "id" => "2",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "prenom" => "Michel",
-                "nom" => "Dupont",
-                "ville" => "Drancy"
-            ],
-            [
-                "id" => "3",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "prenom" => "Min",
-                "nom" => "Ouche",
-                "ville" => "Chatou"
-            ]
-        ];
+        $livreurs = $this->getDoctrine()->getRepository('AppBundle:Profil')->findByActive(true);
+        $params = [];
+        foreach ($livreurs as $livreur) {
+            $params[] = [
+                "id" => $livreur->getId(),
+                "photo" => $livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : "",
+                "prenom" => $livreur->getPrenom(),
+                "nom" => $livreur->getNom(),
+                "ville" => $livreur->getVilledelivraison()
+            ];
+        }
 
         // replace this example code with whatever you need
         return $this->render('admin/liste.html.twig', [
@@ -138,7 +125,7 @@ class AdminController extends Controller
             $em->persist($profil);
             $em->flush();
 
-            return $this->redirectToRoute('list_admin');
+            return $this->redirectToRoute('admin_list');
         }
         
         // replace this example code with whatever you need
@@ -198,14 +185,27 @@ class AdminController extends Controller
     }
 
     /**
-     * @Route("/modifier_livreur", name="modifier_livreur")
+     * @Route("/livreur/supprimer", name="delete_livreur")
+     * @Method({"POST"})
      */
-    public function modifier_livreurAction(Request $request)
+    public function deleteLivreurAction(Request $request)
     {
-        
-        // replace this example code with whatever you need
-        return $this->render('admin/modifier_livreur.html.twig', [
-         ]);
+        $user_id = $request->request->get('user_id');
+
+        if ($user_id == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+
+        $profil = $this->getDoctrine()->getRepository('AppBundle:Profil')->find($user_id);
+        if ($profil == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+
+        $profil->setActive(false);
+
+        $em = $this->getDoctrine()->getEntityManager()->flush();
+
+        return new Response("ok", 200);
     }
 
 
