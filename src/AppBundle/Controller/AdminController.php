@@ -250,6 +250,26 @@ class AdminController extends Controller
     }
 
 
+    /**
+     * @Route("/facture/modifier", name="admin_edit_facture")
+     */
+    public function editfactureAction(Request $request)
+    {
+        $params = [
+            [
+                "nom" => "Couchette",
+                "prenom" => "Lee",
+                "id" => 1
+            ],
+            
+        ];
+        
+        // replace this example code with whatever you need
+        return $this->render('admin/edit_facture.html.twig', [
+            "livreurs" => $params]);
+    }
+
+
 
     /**
      * @Route("/messagerie", name="messagerie")
@@ -302,6 +322,86 @@ class AdminController extends Controller
                 "etat" => true,
                 "libelle" => "Facture du mois de janvier 2016",
                 "profil" => "John Doe"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Michel Dupont"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Michel Dupont"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Michel Dupont"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Michel Dupont"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Michel Dupont",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Michel Dupont"
             ],
             [
                 "id" => "Michel Dupont",
