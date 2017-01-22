@@ -1,0 +1,36 @@
+{% extends 'user/base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Liste des factures</div>
+                    <div class="panel-body">
+                        <table data-toggle="table" data-url="tables/data1.json"  data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-search="true" data-select-item-name="toolbar1" data-pagination="true" data-sort-name="name" data-sort-order="desc">
+                            <thead>
+                            <tr>
+
+                                <th data-field="livreur">Livreur</th>
+                                <th data-field="identifiant">Intitulé</th>
+                                <th data-field="nom">Date</th>
+                                <th data-field="prenom">Montant</th>
+                                <th>Télécharger</th>
+                            </tr>
+                            </thead>
+                            {% for facture in factures %}
+                            <tr>
+                                <td data-field="identifiant" style="text-align:center;">{{facture.profil}}</td>
+                                <td data-field="nom">{{ facture.libelle|e}}</td>
+                                <td data-field="prenom">{{ facture.date|date("d/m/Y") }}</td>
+                                <td data-field="ville">{{ facture.montant|e}}€</td>
+                                <td>
+                                    <a href="#"><svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td>
+
+                            </tr>
+                            {% endfor %}    
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->  
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends 'user/base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Planning</div>
+					<div class="panel-body">
+						<form method"post" action="">
+							<table data-toggle="table">
+							    <thead>
+							    <tr>
+							    	<th>Créneaux</th>
+							        <th>Lundi</th>
+							        <th>Mardi</th>
+							        <th>Mercredi</th>
+							        <th>Jeudi</th>
+							        <th>Vendredi</th>
+							        <th>Samedi</th>
+							        <th>Dimanche</th>
+							    </tr>
+							    </thead>
+
+							    <tr>
+							    		<td>Livraisons du midi</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    </tr>
+							    <tr>
+							    		<td>Livraisons du soir</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    		<td>Disponible ?</td>
+							    </tr>
+							</table>
+							<button type="submit" class="btn btn-default btn-md">Valider mes disponibilités</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->	
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'user/base.html.twig' %}
+
+{% block content %}
+    <div class="row">
+			<div class="col-lg-12">
+				<div class="panel panel-default">
+					<div class="panel-heading">Liste des factures</div>
+					<div class="panel-heading"><a href="{{path('admin_add_facture')}}"><button class="btn btn-primary">Nouvelle facture</button></a></div>
+					<div class="panel-body">
+						<table data-toggle="table" data-url="tables/data1.json"  data-show-refresh="true" data-show-toggle="true" data-show-columns="true" data-search="true" data-select-item-name="toolbar1" data-pagination="true" data-sort-name="name" data-sort-order="desc">
+						    <thead>
+						    <tr>
+
+						        <th data-field="livreur">Livreur</th>
+						        <th data-field="identifiant">Intitulé</th>
+						        <th data-field="nom">Date</th>
+						        <th data-field="prenom">Montant</th>
+						        <th data-field="etat">Payée</th>
+
+						        <th>Actions</th>
+						    </tr>
+						    </thead>
+						    {% for facture in factures %}
+						    <tr>
+						        <td data-field="identifiant" style="text-align:center;">{{facture.profil}}</td>
+						        <td data-field="nom">{{ facture.libelle|e}}</td>
+						        <td data-field="prenom">{{ facture.date|date("d/m/Y") }}</td>
+						        <td data-field="ville">{{ facture.montant|e}}€</td>
+						        <td data-field="etat">{% if facture.etat %} OUI {% else %} NON {% endif %}</td>
+
+						        <td>
+						        	<a href="#"><svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg></a>
+						        	<a href="{{path('admin_edit_facture')}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
+						        	</a>
+						    		<svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg></td>
+
+						    </tr>
+						    {% endfor %}	
+						</table>
+					</div>
+				</div>
+			</div>
+		</div><!--/.row-->	
+{% endblock %}
