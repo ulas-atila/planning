@@ -31,6 +31,7 @@ class Attribuee
     
     /**
     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil",inversedBy="attribuees")
+    * @ORM\JoinColumn(nullable=false)
     */
     private $profil;
 

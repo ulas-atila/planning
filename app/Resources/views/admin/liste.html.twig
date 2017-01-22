@@ -24,7 +24,7 @@
                                 <td data-field="prenom">{{ livreur.prenom|e}}</td>
                                 <td data-field="ville">{{ livreur.ville|e}}</td>
                                 <td>
-                                    <a href="{{path('admin_chat')}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
+                                    <a href="{{path('admin_chat', {userId:livreur.id})}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
                                     </a>
                                     <a href="{{ path('edit_livreur', {userId:livreur.id}) }}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
                                     </a>
@@ -53,6 +53,9 @@
                     $.post( "{{ path('delete_livreur') }}", { user_id: $(this).data('id') } )
                         .done(function( data ) {
                             location.reload();
+                        })
+                        .fail(function() {
+                            alert( "Une erreur est survenue. Veuillez recommencer plus tard ou contactez notre service client." );
                         });
                 }
             });

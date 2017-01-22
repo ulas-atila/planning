@@ -31,6 +31,7 @@ class Disponibilite
     
     /**
     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Profil",inversedBy="diponibilites")
+    * @ORM\JoinColumn(nullable=false)
     */
     private $profil;
 
