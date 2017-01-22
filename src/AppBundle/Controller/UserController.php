@@ -90,9 +90,24 @@ class UserController extends Controller
      */
     public function factureAction(Request $request)
     {
+        $dateDebut = $request->request->get('date_debut');
+        $dateFin = $request->request->get('date_fin');
+        if (null === $dateFin) {
+            $dateFin = new \DateTime();
+        }
+        if (null === $dateDebut) {
+            $dateDebut = new \DateTime();
+            $dateDebut->setTimestamp($dateFin->getTimestamp());
+            $dateDebut->modify('-1 month');
+        }
+        if ($dateDebut > $dateFin) {
+            $tmp = $dateDebut;
+            $dateDebut = $dateFin;
+            $dateFin = $tmp;
+        }
         $login = $this->getUser();
         $profil = $login->getProfil();
-        $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findBy(['profil' => $profil, 'etat' => true]);
+        $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findForUser($profil, $dateDebut, $dateFin);
         $params = [];
         foreach ($factures as $facture) {
             $params[] = [
@@ -105,61 +120,10 @@ class UserController extends Controller
             ];
         }
 
-        /*$params = [
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture du mois de janvier 2016",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => false,
-                "libelle" => "Facture septembre/octobre",
-                "profil" => "Min Ouche"
-            ],
-            [
-                "id" => "Min Ouche",
-                "date" => new \DateTime(),
-                "montant" => "290.45",
-                "etat" => true,
-                "libelle" => "Facture des trois dimanches de janvier",
-                "profil" => "Min Ouche"
-            ]
-        ];*/
-
-        
-        // replace this example code with whatever you need
         return $this->render('user/factures.html.twig', [
-            "factures" => $params
+            "factures" => $params,
+            "dateDebut" => $dateDebut,
+            "dateFin" => $dateFin
          ]);
     }
 
