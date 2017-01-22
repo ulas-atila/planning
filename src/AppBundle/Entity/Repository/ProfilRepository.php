@@ -20,4 +20,14 @@ class ProfilRepository extends EntityRepository
 
         return $result;
     }
+
+    public function count()
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('COUNT(p)')
+            ->from('AppBundle:Profil', 'p')
+            ->where('p.active = true');
+        return intval($qb->getQuery()->execute()[0][1]);
+    }
 }

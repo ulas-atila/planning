@@ -17,12 +17,12 @@
 						    </tr>
 						    </thead>
 						    {% for message in messages %}
-						    <tr {% if message.vu == false %} style="background-color:#b6e7c3 !important;" {% endif %}>
+						    <tr>
 						        <td data-field="identifiant">{% if message.photo != "" %}<img src="{{ asset(message.photo) }}" alt="" width="40" height="40"/>{% endif %}</td>
 						        <td data-field="nom">{{ message.from|e}}</td>
 						        <td data-field="prenom">{{ message.content|e}}</td>
 						        <td>{{message.date|date("d/m/Y")}}</td>
-						        <td><a href="{{path('admin_chat', {userId:message.livreur_id})}}"><svg class="glyph stroked eye" style="width:35px;height:35px;"><use xlink:href="#stroked-eye"/></svg></a></td>
+						        <td><a {% if message.vu == false %} style="color:red !important;" {% endif %} href="{{path('admin_chat', {userId:message.livreur_id})}}"><svg class="glyph stroked eye" style="width:35px;height:35px;"><use xlink:href="#stroked-eye"/></svg></a></td>
 						    </tr>
 						    {% endfor %}	
 						</table>
