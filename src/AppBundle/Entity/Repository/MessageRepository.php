@@ -26,7 +26,7 @@ class MessageRepository extends EntityRepository
         $qb
             ->innerJoin("m.profil", "p")
             ->where('p.id = ?1')
-            ->orderBy('m.date')
+            ->orderBy('m.date', 'ASC')
             ->setParameter(1, $userId);
 
         return $qb->getQuery()->execute();
@@ -41,6 +41,20 @@ class MessageRepository extends EntityRepository
             ->innerJoin('m.login', 'l')
             ->where('m.vu = false')
             ->andWhere('l.admin = false');
+        return intval($qb->getQuery()->execute()[0][1]);
+    }
+
+    public function countUserNonLu($profil)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('COUNT(m)')
+            ->from('AppBundle:Message', 'm')
+            ->innerJoin('m.login', 'l')
+            ->where('m.vu = false')
+            ->andWhere('l.profil = ?1')
+            ->andWhere('l.admin = true')
+            ->setParameter(1, $profil);
         return intval($qb->getQuery()->execute()[0][1]);
     }
 }

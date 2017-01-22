@@ -260,7 +260,7 @@ class AdminController extends Controller
 
 
     /**
-     * @Route("/planning", name="admin_homepage")
+     * @Route("/", name="admin_homepage")
      * @Route("/planning", name="admin_planning")
      */
     public function planningAction(Request $request)

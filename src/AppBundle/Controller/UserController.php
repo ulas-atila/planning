@@ -2,9 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Entity\Message;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * @Route("/livreur")
@@ -12,43 +15,29 @@ use Symfony\Component\HttpFoundation\Request;
 class UserController extends Controller
 {
     /**
-     * @Route("/", name="user_homepage")
-     */
-    public function indexAction(Request $request)
-    {
-        // replace this example code with whatever you need
-        return $this->render('default/index.html.twig', [
-            'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
-        ]);
-    }
-
-
-    /**
      * @Route("/chat", name="user_messagerie")
      */
     public function chatAction(Request $request)
     {
-        $login = $this->getDoctrine()->getRepository('AppBundle:Login')->findOneByEmail('admin@admin.fr');
-        $params = [
-            [
-                "from" => "Toto",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ],
-            [
-                "from" => "admin",
-                "photo" => "http://socialpro.miguelvasquez.net/public/avatar/large_johndoe_18gu2qv.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ],
-            [
-                "from" => "toto",
-                "photo" => "http://allenbukoff.com/newwavepsychology/JohnDoeMasthead.jpg",
-                "content" => "Mon Message",
-                "date" => new \DateTime()
-            ]
-        ];
+        $login = $this->getUser();
+        $profil = $login->getProfil();
+        $messages = $this->getDoctrine()->getRepository('AppBundle:Message')->findBy(['profil' => $profil], ['date' => 'ASC']);
+        $params = [];
+        $em = $this->getDoctrine()->getEntityManager();
+        foreach ($messages as $message) {
+            $livreur = $message->getProfil();
+            $isAdmin = $message->getLogin()->getAdmin();
+            if ($isAdmin && !$message->getVu()) {
+                $message->setVu(true);
+            }
+            $params[] = [
+                "from" => $isAdmin ? "admin" : $livreur->getPrenom() . " " . $livreur->getNom(),
+                "photo" => $isAdmin ? "" : ($livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : ""),
+                "content" => $message->getMessage(),
+                "date" => $message->getDate(),
+            ];
+        }
+        $em->flush();
 
         // replace this example code with whatever you need
         return $this->render('user/chat.html.twig', [
@@ -57,9 +46,33 @@ class UserController extends Controller
     }
 
 
+    /**
+     * @Route("/chat/ajouter", name="user_chat_add")
+     * @Method({"POST"})
+     */
+    public function chatAddAction(Request $request)
+    {
+        $messageText = $request->request->get('message');
+        if ($messageText == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+        $login = $this->getUser();
+        $profil = $login->getProfil();
 
+        $message = new Message();
+        $message->setDate(new \DateTime());
+        $message->setProfil($profil);
+        $message->setLogin($login);
+        $message->setMessage($messageText);
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->persist($message);
+        $em->flush();
+
+        return new Response("ok", 200);
+    }
 
     /**
+     * @Route("/", name="user_homepage")
      * @Route("/planning", name="user_planning")
      */
     public function planningAction(Request $request)
@@ -77,9 +90,22 @@ class UserController extends Controller
      */
     public function factureAction(Request $request)
     {
+        $login = $this->getUser();
+        $profil = $login->getProfil();
+        $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findBy(['profil' => $profil, 'etat' => true]);
+        $params = [];
+        foreach ($factures as $facture) {
+            $params[] = [
+                "id" => $facture->getId(),
+                "date" => $facture->getDate(),
+                "montant" => $facture->getMontant(),
+                "etat" => $facture->getEtat(),
+                "libelle" => $facture->getLibelle(),
+                "profil" => $facture->getProfil()->getNom() . " " . $facture->getProfil()->getPrenom()
+            ];
+        }
 
-
-        $params = [
+        /*$params = [
             [
                 "id" => "Min Ouche",
                 "date" => new \DateTime(),
@@ -128,7 +154,7 @@ class UserController extends Controller
                 "libelle" => "Facture des trois dimanches de janvier",
                 "profil" => "Min Ouche"
             ]
-        ];
+        ];*/
 
         
         // replace this example code with whatever you need

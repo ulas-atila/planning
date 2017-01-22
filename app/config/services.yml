@@ -7,6 +7,6 @@ services:
     app.twig_extension:
         class: AppBundle\Twig\StatExtension
         public: false
-        arguments: ['@doctrine']
+        arguments: ['@doctrine', '@security.token_storage']
         tags:
             - { name: twig.extension }
