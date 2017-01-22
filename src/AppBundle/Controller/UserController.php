@@ -72,6 +72,71 @@ class UserController extends Controller
 
 
 
+    /**
+     * @Route("/factures", name="factures")
+     */
+    public function factureAction(Request $request)
+    {
+
+
+        $params = [
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture du mois de janvier 2016",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => false,
+                "libelle" => "Facture septembre/octobre",
+                "profil" => "Min Ouche"
+            ],
+            [
+                "id" => "Min Ouche",
+                "date" => new \DateTime(),
+                "montant" => "290.45",
+                "etat" => true,
+                "libelle" => "Facture des trois dimanches de janvier",
+                "profil" => "Min Ouche"
+            ]
+        ];
+
+        
+        // replace this example code with whatever you need
+        return $this->render('user/factures.html.twig', [
+            "factures" => $params
+         ]);
+    }
+
 
 
 
