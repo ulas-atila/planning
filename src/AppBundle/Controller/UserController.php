@@ -73,7 +73,7 @@ class UserController extends Controller
 
 
     /**
-     * @Route("/factures", name="factures")
+     * @Route("/factures", name="user_factures")
      */
     public function factureAction(Request $request)
     {
