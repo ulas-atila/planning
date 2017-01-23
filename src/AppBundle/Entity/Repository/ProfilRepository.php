@@ -30,4 +30,15 @@ class ProfilRepository extends EntityRepository
             ->where('p.active = true');
         return intval($qb->getQuery()->execute()[0][1]);
     }
+
+    public function getById($ids)
+    {
+        $qb = $this->getEntityManager()->createQueryBuilder();
+        $qb
+            ->select('p')
+            ->from('AppBundle:Profil', 'p', 'p.id')
+            ->where($qb->expr()->in('p.id', '?1'))
+            ->setParameter(1, $ids);
+        return $qb->getQuery()->execute();
+    }
 }

@@ -70,7 +70,7 @@ class Profil
     private $villedelivraison;
     
     /**
-    * @ORM\Column(type="date")
+    * @ORM\Column(type="datetime")
     * @Assert\NotBlank(message="Valeur obligatoire")
     */
     private $dateentree;

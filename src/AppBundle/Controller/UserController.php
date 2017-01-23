@@ -3,6 +3,7 @@
 namespace AppBundle\Controller;
 
 use AppBundle\Entity\Message;
+use AppBundle\Entity\Disponibilite;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -77,13 +78,112 @@ class UserController extends Controller
      */
     public function planningAction(Request $request)
     {
-        
-        // replace this example code with whatever you need
+        $date = new \DateTime($request->request->get('jour'));
+        $day = date('w', $date->getTimestamp()) - 1;
+        if ($day == -1) $day = 6;
+
+        $dateDebut = new \DateTime();
+        $dateDebut->setTimestamp($date->getTimestamp());
+        $dateDebut->setTime(0,0,0);
+        $dateDebut->modify('-' . $day . ' days');
+
+        $dateFin = new \DateTime();
+        $dateFin->setTimestamp($date->getTimestamp());
+        $dateFin->setTime(0,0,0);
+        $dateFin->modify('+' . (7-$day) . ' days');
+
+        $login = $this->getUser();
+        $profil = $login->getProfil();
+        $disponibilites = $this->getDoctrine()->getRepository('AppBundle:Disponibilite')->findForUser($profil, $dateDebut, $dateFin);
+        $params = $this->convertDisponibilitesToParams($disponibilites);
+
+        if ($request->request->get('edit')) {
+            $em = $this->getDoctrine()->getEntityManager();
+            foreach ($params as $param => $disponibilite) {
+                if ($request->request->get($param) === null) {
+                    $em->remove($disponibilite);
+                }
+            }
+            foreach ($request->request->all() as $key => $value) {
+                if ($key == "jour" || $key == "edit") {
+                    continue;
+                }
+                if (!array_key_exists($key, $params)) {
+                    $em->persist($this->convertParamToDisponibilite($dateDebut, $key, $profil));
+                }
+            }
+            $em->flush();
+            $params = $request->request->all();
+        }
+
         return $this->render('user/planning.html.twig', [
-         ]);
+            "date" => $date,
+            "disponibilites" => $params
+        ]);
     }
 
+    private function convertDisponibilitesToParams($disponibilites)
+    {
+        $midi_debut = $this->getParameter('creneau_midi_debut');
+        $midi_fin = $this->getParameter('creneau_midi_fin');
+        $soir_debut = $this->getParameter('creneau_soir_debut');
+        $soir_fin = $this->getParameter('creneau_soir_fin');
+        $jours = ['dimanche', 'lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi'];
+        $params = [];
+        foreach ($disponibilites as $disponibilite) {
+            $dateDebut = $disponibilite->getDateDebut();
+            $heureDebut = $dateDebut->format('H:i');
+            $dateFin = $disponibilite->getDateFin();
+            $heureFin = $dateDebut->format('H:i');
+            if ($this->isBetween($heureDebut, $midi_debut, $midi_fin) && $this->isBetween($heureFin, $midi_debut, $midi_fin)) {
+                $creneau = "midi";
+            } elseif ($this->isBetween($heureDebut, $soir_debut, $soir_fin) && $this->isBetween($heureFin, $soir_debut, $soir_fin)){
+                $creneau = "soir";
+            } else {
+                continue;
+            }
 
+            $day = date('w', $dateDebut->getTimestamp());
+            $key = $jours[$day] . '_' . $creneau;
+
+            $params[$key] = $disponibilite;
+        }
+
+        return $params;
+    }
+
+    private function convertParamToDisponibilite($dateDebutSemaine, $param, $profil)
+    {
+        list($jour, $creneau) = explode('_', $param);
+
+        $creneau_debut = explode(':', $this->getParameter('creneau_' . $creneau . '_debut'));
+        $creneau_fin = explode(':', $this->getParameter('creneau_' . $creneau . '_fin'));
+
+        $jours = ['lundi', 'mardi', 'mercredi', 'jeudi', 'vendredi', 'samedi', 'dimanche'];
+        $daysToAdd = array_search($jour, $jours);
+
+        $dateDebut = new \DateTime();
+        $dateDebut->setTimestamp($dateDebutSemaine->getTimestamp());
+        $dateDebut->modify('+' . $daysToAdd . ' days');
+        $dateDebut->setTime($creneau_debut[0], $creneau_debut[1]);
+
+        $dateFin = new \DateTime();
+        $dateFin->setTimestamp($dateDebutSemaine->getTimestamp());
+        $dateFin->modify('+' . $daysToAdd . ' days');
+        $dateFin->setTime($creneau_fin[0], $creneau_fin[1]);
+
+        $disponibilite = new Disponibilite();
+        $disponibilite->setDateDebut($dateDebut);
+        $disponibilite->setDateFin($dateFin);
+        $disponibilite->setProfil($profil);
+
+        return $disponibilite;
+    }
+
+    private function isBetween($sujet, $heureDebut, $heureFin)
+    {
+        return strtotime($sujet) >= strtotime($heureDebut) && strtotime($sujet) <= strtotime($heureFin);
+    }
 
     /**
      * @Route("/factures", name="user_factures")
@@ -91,14 +191,13 @@ class UserController extends Controller
     public function factureAction(Request $request)
     {
         $dateDebut = $request->request->get('date_debut');
-        $dateFin = $request->request->get('date_fin');
-        if (null === $dateFin) {
-            $dateFin = new \DateTime();
-        }
+        $dateFin = new \DateTime($request->request->get('date_fin'));
         if (null === $dateDebut) {
             $dateDebut = new \DateTime();
             $dateDebut->setTimestamp($dateFin->getTimestamp());
             $dateDebut->modify('-1 month');
+        } else {
+            $dateDebut = new \DateTime($dateDebut);
         }
         if ($dateDebut > $dateFin) {
             $tmp = $dateDebut;

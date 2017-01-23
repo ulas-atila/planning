@@ -20,3 +20,8 @@ parameters:
 
     photo_directory: "%kernel.root_dir%/../web/photo/"
     photo_path: "/photo/"
+
+    creneau_midi_debut: 11:30
+    creneau_midi_fin: 14:30
+    creneau_soir_debut: 18:30
+    creneau_soir_fin: 23:00
