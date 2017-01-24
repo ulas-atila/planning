@@ -5,7 +5,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints AS Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\DisponibiliteRepository")
  * @ORM\Table(name="attribuee")
  */
 class Attribuee
@@ -18,13 +18,13 @@ class Attribuee
     private $id;
 
     /**
-    * @ORM\Column(type="date")
+    * @ORM\Column(type="datetime")
     * @Assert\NotBlank
     */
     private $dateDebut;
 
     /**
-    * @ORM\Column(type="date")
+    * @ORM\Column(type="datetime")
     * @Assert\NotBlank
     */
     private $dateFin;

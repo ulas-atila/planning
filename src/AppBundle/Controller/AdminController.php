@@ -6,6 +6,7 @@ use AppBundle\Entity\Profil;
 use AppBundle\Entity\Login;
 use AppBundle\Entity\Message;
 use AppBundle\Entity\Facture;
+use AppBundle\Entity\Attribuee;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -265,10 +266,133 @@ class AdminController extends Controller
      */
     public function planningAction(Request $request)
     {
-        
+        $date = new \DateTime($request->request->get('jour'));
+        $day = date('w', $date->getTimestamp()) - 1;
+        if ($day == -1) $day = 6;
+
+        $dateDebut = new \DateTime();
+        $dateDebut->setTimestamp($date->getTimestamp());
+        $dateDebut->setTime(0,0,0);
+        $dateDebut->modify('-' . $day . ' days');
+
+        $dateFin = new \DateTime();
+        $dateFin->setTimestamp($date->getTimestamp());
+        $dateFin->setTime(0,0,0);
+        $dateFin->modify('+' . (7-$day) . ' days');
+
+        $disponibilites = $this->getDoctrine()->getRepository('AppBundle:Disponibilite')->findForAdmin($dateDebut, $dateFin);
+        $attribuees = $this->getDoctrine()->getRepository('AppBundle:Attribuee')->findForAdmin($dateDebut, $dateFin);
+        $paramsDisponibilites = $this->convertDisponibilitesToParams($disponibilites, $dateDebut);
+        $paramsAttribuees = $this->convertDisponibilitesToParams($attribuees, $dateDebut);
+
+        if ($request->request->get('day') !== null) {
+            $creneau = $request->request->get('creneau');
+            $day = $request->request->get('day');
+
+            list($creneau_debut, $creneau_fin) = explode(' - ', $creneau);
+
+            $creneau_debut = explode('H', $creneau_debut);
+            $creneau_fin = explode('H', $creneau_fin);
+
+            $dateDebutSemaine = $dateDebut;
+            $dateDebut = new \DateTime();
+            $dateDebut->setTimestamp($dateDebutSemaine->getTimestamp());
+            $dateDebut->modify('+' . $day . ' days');
+            $dateFin = new \DateTime();
+            $dateFin->setTimestamp($dateDebut->getTimestamp());
+
+            $dateDebut->setTime($creneau_debut[0], $creneau_debut[1]);
+            $dateFin->setTime($creneau_fin[0], $creneau_fin[1]);
+
+            $em = $this->getDoctrine()->getEntityManager();
+            $attribuees = $this->getDoctrine()->getRepository('AppBundle:Attribuee')->findForAdmin($dateDebut, $dateFin);
+            $profils = $this->getDoctrine()->getRepository('AppBundle:Profil')->getById($request->request->get('users', []));
+            foreach ($attribuees as $attribuee) {
+                $profilId = $attribuee->getProfil()->getId();
+                if (!array_key_exists($profilId, $profils)) {
+                    $em->remove($attribuee);
+                    unset($paramsAttribuees[$creneau][$day][$profilId]);
+                }
+            }
+            foreach ($profils as $profil) {
+                if (!array_key_exists($profil->getId(), $attribuees)) {
+                    $attribuee = new Attribuee();
+                    $attribuee->setDateDebut($dateDebut);
+                    $attribuee->setDateFin($dateFin);
+                    $attribuee->setProfil($profil);
+                    $em->persist($attribuee);
+                    $paramsAttribuees[$creneau][$day][$profil->getId()] = ['prenom' => $profil->getPrenom(), 'nom' => $profil->getNom(), 'id' => $profil->getId()];
+                }
+            }
+            $em->flush();
+        }
+
         // replace this example code with whatever you need
         return $this->render('admin/planning.html.twig', [
-         ]);
+            "date" => $date,
+            'disponibilites' => $paramsDisponibilites,
+            'attribuees' => $paramsAttribuees
+        ]);
+    }
+
+    private function convertParamToDisponibilite($dateDebutSemaine, $profil, $creneau, $day)
+    {
+
+        $attribuee = new Attribuee();
+        $attribuee->setDateDebut($dateDebut);
+        $attribuee->setDateFin($dateFin);
+        $attribuee->setProfil($profil);
+
+        return $attribuee;
+    }
+
+    private function convertDisponibilitesToParams($disponibilites, $dateDebutSemaine)
+    {
+        $creneaux = [
+            ['11H30', '14H30'],
+            ['18H30', '19H30'],
+            ['19H30', '22H30'],
+            ['20H00', '23H00']
+        ];
+
+        $data = [];
+
+        foreach ($creneaux as $creneau) {
+            $datum = [];
+            $creneau_debut = explode('H', $creneau[0]);
+            $creneau_fin = explode('H', $creneau[1]);
+
+            for ($day = 0; $day < 7; $day++) {
+                $datum[$day] = [];
+                $dateDebut = new \DateTime();
+                $dateDebut->setTimestamp($dateDebutSemaine->getTimestamp());
+                $dateDebut->modify('+' . $day . ' days');
+                $dateFin = new \DateTime();
+                $dateFin->setTimestamp($dateDebut->getTimestamp());
+
+                $dateDebut->setTime($creneau_debut[0], $creneau_debut[1]);
+                $dateFin->setTime($creneau_fin[0], $creneau_fin[1]);
+
+                foreach ($disponibilites as $disponibilite) {
+                    if (
+                        $this->isBetween($dateDebut, $disponibilite->getDateDebut(), $disponibilite->getDateFin()) &&
+                        $this->isBetween($dateFin, $disponibilite->getDateDebut(), $disponibilite->getDateFin())
+                    ){
+                        $profil = $disponibilite->getProfil();
+                        $datum[$day][$profil->getId()] = ['prenom' => $profil->getPrenom(), 'nom' => $profil->getNom(), 'id' => $profil->getId()];
+                    }
+                }
+            }
+
+            $data[$creneau[0] . ' - ' . $creneau[1]] = $datum;
+        }
+
+        return $data;
+    }
+
+    private function isBetween($sujet, $dateDebut, $dateFin)
+    {
+        return $sujet >= $dateDebut && $sujet <= $dateFin;
     }
 
     /**
