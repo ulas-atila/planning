@@ -28,10 +28,11 @@
                                 <td data-field="prenom">{{ facture.date|date("d/m/Y") }}</td>
                                 <td data-field="ville">{{ facture.montant|e}}€</td>
                                 <td>
-                                    <a href="#"><svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td>
-                            </tr>
+                                    <a href="{{ path('pdf_facture', {ids: facture.id }) }}"><svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td>
+                                </tr>
                             {% endfor %}    
                         </table>
+                        <div> <a href="{{ path('pdf_facture', {ids: allIds }) }}">Tout télécharger <svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td></div>
                     </div>
                 </div>
             </div>

@@ -208,7 +208,9 @@ class UserController extends Controller
         $profil = $login->getProfil();
         $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findForUser($profil, $dateDebut, $dateFin);
         $params = [];
+        $allIds = [];
         foreach ($factures as $facture) {
+            $allIds[] = $facture->getId();
             $params[] = [
                 "id" => $facture->getId(),
                 "date" => $facture->getDate(),
@@ -222,11 +224,51 @@ class UserController extends Controller
         return $this->render('user/factures.html.twig', [
             "factures" => $params,
             "dateDebut" => $dateDebut,
-            "dateFin" => $dateFin
+            "dateFin" => $dateFin,
+            "allIds" => implode('-', $allIds)
          ]);
     }
 
+    /**
+     * @Route("/factures/facture{ids}.pdf", name="pdf_facture")
+     */
+    public function facturePDFAction(Request $request, $ids)
+    {
+        set_time_limit(0);
+        $factureIds = explode('-', $ids);
+        $factures = $this->getDoctrine()->getRepository('AppBundle:Facture')->findById($factureIds);
+        if (!isset($factures[0])) {
+            throw $this->createNotFoundException('Factures does not exist');
+        }
+        $profil = $this->getUser()->getProfil();
 
+        $params = [];
+        foreach ($factures as $facture) {
+            $factProfile = $facture->getProfil();
+            if ($facture->getProfil() !== $profil) {
+                throw $this->createNotFoundException('Factures does not exist');
+            }
+            $params[] = [
+                "facture_id" => $facture->getId(),
+                "facture_montant" => $facture->getMontant(),
+                "facture_libelle" => $facture->getLibelle(),
+                "livreur_nom" => $profil->getNom(),
+                "livreur_prenom" =>$profil->getPrenom(),
+                "livreur_siret" => $profil->getSiret(),
+                "livreur_adresse" => $profil->getAdresse()
+            ];
+        }
 
+        $file = sys_get_temp_dir() . '\\Facture_' . md5(uniqid()) . '.pdf';
+        $html = $this->renderView('user/facture.html.twig', [
+           "informations" => $params
+        ]);
+        $html2pdf = new \Html2Pdf_Html2Pdf('P','A4','fr');
+        $html2pdf->pdf->SetDisplayMode('real');
+        $html2pdf->writeHTML($html);
+        $html2pdf->Output($file);
+
+        return new Response('', 200, ['Content-Type' => 'application/pdf']);
+    }
 
 }

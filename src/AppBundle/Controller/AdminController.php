@@ -165,7 +165,7 @@ class AdminController extends Controller
             if ($userId === null) {
                 $login = new Login();
                 $login->setEmail($profil->getEmail());
-                $login->setPassword("password");
+                $login->setPassword($this->generatePassword());
                 $login->setProfil($profil);
                 $em->persist($login);
             } else {
@@ -183,6 +183,19 @@ class AdminController extends Controller
             'form' => $form->createView(),
             'isNew' => $userId === null
         ]);
+    }
+
+    private function generatePassword($length = 8)
+    {
+        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        $count = mb_strlen($chars);
+
+        for ($i = 0, $result = ''; $i < $length; $i++) {
+            $index = rand(0, $count - 1);
+            $result .= mb_substr($chars, $index, 1);
+        }
+
+        return $result;
     }
 
     private function createProfilForm(Profil $profil, $isNew = true)
