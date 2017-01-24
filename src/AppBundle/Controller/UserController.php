@@ -259,7 +259,7 @@ class UserController extends Controller
             ];
         }
 
-        $file = sys_get_temp_dir() . '\\Facture_' . md5(uniqid()) . '.pdf';
+        $file = 'Facture' . $ids . '.pdf';
         $html = $this->renderView('user/facture.html.twig', [
            "informations" => $params
         ]);

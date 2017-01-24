@@ -2,33 +2,84 @@
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Facture numéro {{ facture.id }}</title>
+    <title>Facture</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 </head>
 <body>
-
-<div class="container">
-
-<div class="page-header">
-    <h1>Facture émise par  Publicab au nom de <small>{{ livreur.prenom ~ livreur.nom }}.</small></h1>
-</div>
-
+{% for information in informations %}
+<div style="width:750px;">
+    <div style="text-align:center;background-color:#DDD;">
+        <h1>Facture émise par  Publicab au nom de : <br/><small>{{ information.livreur_prenom ~" "~ information.livreur_nom }}.</small></h1>
+    </div>
 <!-- Simple Invoice - START -->
-<table border="1" style="width:100%;">
-    <tr>
-        <td colspan="2"><h2>Facture numéro {{ facture.id }}</h2></td>
-    </tr>
-    <tr>
-        <td>PRESTATAIRE</td>
 
-        <td>CLIENT</td>
+<table>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+      
+    </table>
+<table cellspacing="0" style="width:100%;border-top:1px;border-left:1px;border-right:1px;border-bottom:1px;">
+    <tr>
+        <td colspan="3">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    </td>
+</tr>
+<tr>
+    <td colspan="3" style="text-align:center;border-bottom:1px;">
+        <h2>Facture numéro {{ information.facture_id }}</h2>
+    </td>
     </tr>
     <tr>
-        <td>
-            <strong>{{ livreur.prenom | livreur.nom }}</strong><br>
-            {{ livreur.adresse }}<br>
+        <td style="background-color:#DDD;width:200px;">PRESTATAIRE</td>
+        <td style="width:200px;"></td>
+        <td style="background-color:#DDD;width:200px;">CLIENT</td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <strong>{{ information.livreur_prenom ~" "~ information.livreur_nom }}</strong><br>
+            {{ information.livreur_adresse }}<br>
             <strong>SIRET : </strong>
-            {{ livreur.siret }}
+            {{ information.livreur_siret }}
         </td>
         <td>
             <strong>Publicab</strong><br>
@@ -37,44 +88,153 @@
         </td>
     </tr>
 </table>
-<table border="1" style="width:100%;">
+<table>
         <tr>
-            <td colspan="4">
-                <h3 style="text-align:center;"><strong>Libellé : {{ facture.libelle }}</strong></h3>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+      
+    </table>
+<table cellspacing="0" style="border-bottom:1px;">
+        <tr>
+            <td colspan="4" style="border-bottom:0px;">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </td>
+        </tr>
+        <tr>
+
+            <td colspan="4" style="background-color:#DDD;border-left:1px;border-right:1px;border-top:1px;">
+                <h3 style="text-align:center;"><strong>Libellé : {{ information.facture_libelle }}</strong></h3>
             </td>
         </tr>
        <tr>
-            <td colspan="2"><strong>Intitulé</strong></td>
-            <td></td>
-            <td style="text-align:right;"><strong>Montant HT</strong></td>
+            <td colspan="2" style="border-left:1px;"><strong>Intitulé</strong></td>
+            
+            <td colspan="2" style="text-align:right;border-right:1px;"><strong>Montant HT</strong></td>
         </tr>
         <tr>
-            <td colspan="2">Prestation de livraison</td>
-            <td></td>
-            <td style="text-align:right">{{ facture.montant }}</td>
+            <td colspan="3" style="border-left:1px;border-bottom:1px;">Prestation de livraison</td>
+            <td style="text-align:right;border-right:1px;border-bottom:1px;">{{ information.facture_montant|number_format(2,'.',' ') }}€</td>
         </tr>
         <tr>
-            <td colspan="2"></td>
+            <td colspan="4" style="border-left:1px;border-right:1px;">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-left:1px;"></td>
             <td style="text-align:right;"><strong>Total en euros TTC</strong></td>
-            <td style="text-align:right;">{{ facture.montant }}</td>
+            <td style="text-align:right;border-right:1px;">{{ information.facture_montant|number_format(2,'.',' ') }}€</td>
         </tr>
         <tr>
-            <td colspan="2"></td>
+            <td colspan="2" style="border-left:1px;"></td>
             <td style="text-align:right;"><strong>TVA NON APPLICABLE</strong></td>
-            <td style="text-align:right;">ARTICLE 293B DU CGI</td>
+            <td style="text-align:right;border-right:1px;">ARTICLE 293B DU CGI</td>
+        </tr>
+    </table>
+
+    <table>
+    <tr>
+            <td colspan="4">&nbsp;</td>
         </tr>
         <tr>
-            <td colspan="4" style="text-align:center;">Facture établie au nom et pour le compte de {{ livreur.prenom ~ livreur.nom}} par :<br/>
-            Publicab - 55 rue des Morillons 75015 Paris.
-            SIRET : 511 885 758 00033 au capital de 100.000€
-            </td>
+            <td colspan="4">&nbsp;</td>
         </tr>
-</table>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+      
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+        <tr>
+            <td colspan="4">&nbsp;</td>
+        </tr>
+      
+    </table>
+    
+    <div style="text-align:center;">
+        Facture établie au nom et pour le compte de {{ information.livreur_prenom ~" "~ information.livreur_nom}} par :<br/>
+        Publicab - 55 rue des Morillons 75015 Paris.
+        SIRET : 511 885 758 00033 au capital de 100.000€
+    </div>
                     
 
 <!-- Simple Invoice - END -->
 
 </div>
-
+{% endfor %}
 </body>
 </html>
