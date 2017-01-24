@@ -32,7 +32,9 @@
                                 </tr>
                             {% endfor %}    
                         </table>
+                        {% if allIds != '' %}
                         <div> <a href="{{ path('pdf_facture', {ids: allIds }) }}">Tout télécharger <svg class="glyph stroked download"  style="width:35px;height:35px;"><use xlink:href="#stroked-download" style="width:35px;height:35px;"/></svg></a></td></div>
+                        {% endif %}
                     </div>
                 </div>
             </div>

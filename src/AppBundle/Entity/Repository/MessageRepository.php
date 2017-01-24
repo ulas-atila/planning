@@ -52,7 +52,7 @@ class MessageRepository extends EntityRepository
             ->from('AppBundle:Message', 'm')
             ->innerJoin('m.login', 'l')
             ->where('m.vu = false')
-            ->andWhere('l.profil = ?1')
+            ->andWhere('m.profil = ?1')
             ->andWhere('l.admin = true')
             ->setParameter(1, $profil);
         return intval($qb->getQuery()->execute()[0][1]);
