@@ -1,301 +1,80 @@
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title>Facture</title>
+    <title>Facture numéro {{ facture.id }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <style>
-    body
-    {
-        width:210mm;
-        margin:auto;
-        font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
-        font-size: 14px;
-        line-height: 1.42857143;
-        color: #333;
-        background-color: #fff;
-    }
-
-    .container
-    {
-        padding-right: 15px;
-        padding-left: 15px;
-        margin-right: auto;
-        margin-left: auto;  
-    }
-
-    .page-header
-    {
-        padding-bottom: 9px;
-        margin: 40px 0 20px;
-        border-bottom: 1px solid #eee;
-    }
-
-    .h1, h1 {
-        font-size: 36px;
-    }
-    .h1, .h2, .h3, h1, h2, h3 {
-        margin-top: 20px;
-        margin-bottom: 10px;
-    }
-
-    .row {
-        margin-right: -15px;
-        margin-left: -15px;
-    }
-
-    .col-xs-12 {
-        width: 764px;
-        float:left;
-    }
-
-    .text-center {
-        text-align: center;
-    }
-
-    .pull-left {
-        float: left!important;
-    }
-
-    .col-lg-6 {
-        width: 396px;
-    }
-
-    .height {
-        min-height: 200px;
-    }
-
-    .panel-default {
-        border-color: #ddd;
-    }
-    .panel {
-        margin-bottom: 20px;
-        background-color: #fff;
-        border: 1px solid transparent;
-        border-radius: 4px;
-        -webkit-box-shadow: 0 1px 1px rgba(0,0,0,.05);
-        box-shadow: 0 1px 1px rgba(0,0,0,.05);
-    }
-
-    .panel-default>.panel-heading {
-        color: #333;
-        background-color: #f5f5f5;
-        border-color: #ddd;
-    }
-    .panel-heading {
-        padding: 10px 15px;
-        border-bottom: 1px solid transparent;
-        border-top-left-radius: 3px;
-        border-top-right-radius: 3px;
-    }
-
-    .panel-body {
-        padding: 15px;
-    }
-
-    .col-md-12 {
-        width: 764px;
-        float:left;
-    }
-
-    .table-responsive {
-        min-height: .01%;
-        overflow-x: auto;
-    }
-
-    .table {
-        width: 764px;
-        max-width: 764px;
-        margin-bottom: 20px;
-    }
-
-    table {
-        background-color: transparent;
-    }
-    table {
-        border-spacing: 0;
-        border-collapse: collapse;
-    }
-
-    thead {
-        display: table-header-group;
-        vertical-align: middle;
-        border-color: inherit;
-    }
-
-    tr {
-        display: table-row;
-        vertical-align: inherit;
-        border-color: inherit;
-    }
-
-    .text-right {
-        text-align: right;
-    }
-
-    tbody {
-        display: table-row-group;
-        vertical-align: middle;
-        border-color: inherit;
-    }
-
-    .table > tbody > tr > .highrow {
-        border-top: 3px solid;
-    }
-
-    .table > tbody > tr > .emptyrow {
-        border-top: none;
-    }
-    </style>
- <!--   <link rel="stylesheet" type="text/css" href="{{asset('bootstrap/css/bootstrap.min.css')}}" />
-    <link rel="stylesheet" type="text/css" href="{{asset('font-awesome/css/font-awesome.min.css')}}" />
--->
 </head>
 <body>
-    {% for information in informations %}
+
 <div class="container">
 
 <div class="page-header">
-    <h1>Facture émise par  Publicab au nom de <small>{{ information.livreur_prenom ~ information.livreur_nom }}.</small></h1>
+    <h1>Facture émise par  Publicab au nom de <small>{{ livreur.prenom ~ livreur.nom }}.</small></h1>
 </div>
 
 <!-- Simple Invoice - START -->
+<table border="1" style="width:100%;">
+    <tr>
+        <td colspan="2"><h2>Facture numéro {{ facture.id }}</h2></td>
+    </tr>
+    <tr>
+        <td>PRESTATAIRE</td>
 
-    <div class="row">
-        <div class="col-xs-12">
-            <div class="text-center">
-                <i class="fa fa-search-plus pull-left icon"></i>
-                <h2>Facture numéro {{ information.facture_id }}</h2>
-            </div>
-            <hr>
-            <div class="row">
-                <div class="col-xs-12 col-md-6 col-lg-6 pull-left">
-                    <div class="panel panel-default height">
-                        <div class="panel-heading">Prestataire</div>
-                        <div class="panel-body">
-                            <strong>{{ information.livreur_prenom ~ information.livreur_nom }}</strong><br>
-                            {{ information.livreur_adresse }}<br>
-                            <strong>SIRET : </strong>
-                            {{ information.livreur_siret }}
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-md-6 col-lg-6">
-                    <div class="panel panel-default height">
-                        <div class="panel-heading">Client</div>
-                        <div class="panel-body">
-                            <strong>Publicab</strong><br>
-                            55 rue des Morillons<br>
-                            75015 Paris<br>
-                        </div>
-                    </div>
-                </div>
-                <!--<div class="col-xs-12 col-md-3 col-lg-3">
-                    <div class="panel panel-default height">
-                        <div class="panel-heading">Order Preferences</div>
-                        <div class="panel-body">
-                            <strong>Gift:</strong> No<br>
-                            <strong>Express Delivery:</strong> Yes<br>
-                            <strong>Insurance:</strong> No<br>
-                            <strong>Coupon:</strong> No<br>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xs-12 col-md-3 col-lg-3 pull-right">
-                    <div class="panel panel-default height">
-                        <div class="panel-heading">Shipping Address</div>
-                        <div class="panel-body">
-                            <strong>David Peere:</strong><br>
-                            1111 Army Navy Drive<br>
-                            Arlington<br>
-                            VA<br>
-                            <strong>22 203</strong><br>
-                        </div>
-                    </div>
-                </div>
-            -->
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="text-center"><strong>Libellé : {{ information.facture_libelle }}</strong></h3>
-                </div>
-                <div class="panel-body">
-                    <div class="table-responsive">
-                        <table class="table table-condensed">
-                            <thead>
-                                <tr>
-                                    <td><strong>Intitulé</strong></td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-right"><strong>Montant HT</strong></td>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>Prestation de livraison</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td class="text-right">{{ information.facture_montant }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="highrow"></td>
-                                    <td class="highrow"></td>
-                                    <td class="highrow text-right"><strong>Total en euros TTC</strong></td>
-                                    <td class="highrow text-right">{{ information.facture_montant }}</td>
-                                </tr>
-                                <tr>
-                                    <td class="emptyrow"></td>
-                                    <td class="emptyrow"></td>
-                                    <td class="emptyrow text-right"><strong>TVA NON APPLICABLE</strong></td>
-                                    <td class="emptyrow text-right">ARTICLE 293B DU CGI</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="4" style="text-align:center;">Facture établie au nom et pour le compte de {{ information.livreur_prenom ~ information.livreur_nom}} par :<br/>
-Publicab - 55 rue des Morillons 75015 Paris.
-SIRET : 511 885 758 00033 au capital de 100.000€</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-<style>
-.height {
-    min-height: 200px;
-}
-
-.icon {
-    font-size: 47px;
-    color: #5CB85C;
-}
-
-.iconbig {
-    font-size: 77px;
-    color: #5CB85C;
-}
-
-.table > tbody > tr > .emptyrow {
-    border-top: none;
-}
-
-.table > thead > tr > .emptyrow {
-    border-bottom: none;
-}
-
-.table > tbody > tr > .highrow {
-    border-top: 3px solid;
-}
-</style>
+        <td>CLIENT</td>
+    </tr>
+    <tr>
+        <td>
+            <strong>{{ livreur.prenom | livreur.nom }}</strong><br>
+            {{ livreur.adresse }}<br>
+            <strong>SIRET : </strong>
+            {{ livreur.siret }}
+        </td>
+        <td>
+            <strong>Publicab</strong><br>
+            55 rue des Morillons<br>
+            75015 Paris<br>
+        </td>
+    </tr>
+</table>
+<table border="1" style="width:100%;">
+        <tr>
+            <td colspan="4">
+                <h3 style="text-align:center;"><strong>Libellé : {{ facture.libelle }}</strong></h3>
+            </td>
+        </tr>
+       <tr>
+            <td colspan="2"><strong>Intitulé</strong></td>
+            <td></td>
+            <td style="text-align:right;"><strong>Montant HT</strong></td>
+        </tr>
+        <tr>
+            <td colspan="2">Prestation de livraison</td>
+            <td></td>
+            <td style="text-align:right">{{ facture.montant }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td style="text-align:right;"><strong>Total en euros TTC</strong></td>
+            <td style="text-align:right;">{{ facture.montant }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"></td>
+            <td style="text-align:right;"><strong>TVA NON APPLICABLE</strong></td>
+            <td style="text-align:right;">ARTICLE 293B DU CGI</td>
+        </tr>
+        <tr>
+            <td colspan="4" style="text-align:center;">Facture établie au nom et pour le compte de {{ livreur.prenom ~ livreur.nom}} par :<br/>
+            Publicab - 55 rue des Morillons 75015 Paris.
+            SIRET : 511 885 758 00033 au capital de 100.000€
+            </td>
+        </tr>
+</table>
+                    
 
 <!-- Simple Invoice - END -->
 
 </div>
-{% endfor %}
+
 </body>
 </html>
