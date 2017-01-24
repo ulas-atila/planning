@@ -25,3 +25,4 @@ parameters:
     creneau_midi_fin: 14:30
     creneau_soir_debut: 18:30
     creneau_soir_fin: 23:00
+    admin_mail: 'no-reply@publicab.fr'
