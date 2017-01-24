@@ -245,7 +245,7 @@ class UserController extends Controller
         $params = [];
         foreach ($factures as $facture) {
             $factProfile = $facture->getProfil();
-            if ($facture->getProfil() !== $profil) {
+            if ($facture->getProfil() !== $profil || $facture->getEtat() === false) {
                 throw $this->createNotFoundException('Factures does not exist');
             }
             $params[] = [

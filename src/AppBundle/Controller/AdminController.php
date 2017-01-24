@@ -162,18 +162,35 @@ class AdminController extends Controller
 
             $em = $this->getDoctrine()->getManager();
             
+            $em->persist($profil);
             if ($userId === null) {
                 $login = new Login();
                 $login->setEmail($profil->getEmail());
                 $login->setPassword($this->generatePassword());
                 $login->setProfil($profil);
                 $em->persist($login);
+                $em->flush();
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Inscription')
+                    ->setFrom($this->getParameter('admin_mail'))
+                    ->setTo($profil->getEmail())
+                    ->setBody(
+                        $this->renderView(
+                            'admin/email.html.twig',
+                            array(
+                                'nom' => $profil->getNom(),
+                                'prenom' => $profil->getPrenom(),
+                                'password' => $login->getPassword()
+                            )
+                        ),
+                        'text/html'
+                    )
+                ;
+                $this->get('mailer')->send($message);
             } else {
                 $profil->setEmail($previousEmail);
+                $em->flush();
             }
-
-            $em->persist($profil);
-            $em->flush();
 
             return $this->redirectToRoute('admin_list');
         }
@@ -209,7 +226,7 @@ class AdminController extends Controller
                 'attr' => ['placeholder' => 'Prénom du livreur'],
                 'label' => 'Prénom'
             ])
-            ->add('datedenaissance', FormType\DateType::class, [
+            ->add('datedenaissance', FormType\BirthdayType::class, [
                 'attr' => ['placeholder' => 'Date de naissance'],
                 'label' => 'Date de naissance'
             ])
