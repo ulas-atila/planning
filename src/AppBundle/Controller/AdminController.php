@@ -729,7 +729,7 @@ class AdminController extends Controller
         $em = $this->getDoctrine()->getEntityManager();
         $em->flush();
         $message = \Swift_Message::newInstance()
-            ->setSubject('Inscription')
+            ->setSubject('Nouvelle facture')
             ->setFrom($this->getParameter('admin_mail'))
             ->setTo($facture->getProfil()->getEmail())
             ->setBody(
