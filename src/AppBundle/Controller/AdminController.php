@@ -728,6 +728,22 @@ class AdminController extends Controller
 
         $em = $this->getDoctrine()->getEntityManager();
         $em->flush();
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Inscription')
+            ->setFrom($this->getParameter('admin_mail'))
+            ->setTo($facture->getProfil()->getEmail())
+            ->setBody(
+                $this->renderView(
+                    'admin/admin_facture.html.twig',
+                    array(
+                        'nom' => $facture->getProfil()->getNom(),
+                        'prenom' => $facture->getProfil()->getPrenom()
+                    )
+                ),
+                'text/html'
+            )
+        ;
+        $this->get('mailer')->send($message);
 
         return new Response("ok", 200);
     }
