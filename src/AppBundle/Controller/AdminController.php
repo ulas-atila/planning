@@ -734,7 +734,7 @@ class AdminController extends Controller
             ->setTo($facture->getProfil()->getEmail())
             ->setBody(
                 $this->renderView(
-                    'admin/admin_facture.html.twig',
+                    'admin/facture_mail.html.twig',
                     array(
                         'nom' => $facture->getProfil()->getNom(),
                         'prenom' => $facture->getProfil()->getPrenom()
