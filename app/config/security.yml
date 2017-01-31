@@ -27,5 +27,6 @@ security:
             logout:
                 path:   /logout
     access_control:
+        - { path: ^/admin/facture/valider, roles: ROLE_ADMIN_VALIDATE }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/livreur, roles: ROLE_USER }

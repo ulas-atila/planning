@@ -24,8 +24,12 @@
                                 <td data-field="prenom">{{ livreur.prenom|e}}</td>
                                 <td data-field="ville">{{ livreur.ville|e}}</td>
                                 <td>
+                                    {% if not livreur.valide %}
+                                    <a class="valide-user" data-id="{{ livreur.id }}" href="#"> <svg class=" stroked checkmark" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-checkmark"></use></svg>
+                                    {% else %}
                                     <a href="{{path('admin_chat', {userId:livreur.id})}}"><svg class=" stroked email" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-email"></use></svg>
                                     </a>
+                                    {% endif %}
                                     <a href="{{ path('edit_livreur', {userId:livreur.id}) }}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
                                     </a>
                                     <a class="remove-user" data-id="{{ livreur.id }}" href="#"> <svg class=" stroked trash" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-trash"></use></svg>
@@ -51,6 +55,20 @@
                 var r = confirm("Etes vous sure de supprimer cet utilisateur !");
                 if (r == true) {
                     $.post( "{{ path('delete_livreur') }}", { user_id: $(this).data('id') } )
+                        .done(function( data ) {
+                            location.reload();
+                        })
+                        .fail(function() {
+                            alert( "Une erreur est survenue. Veuillez recommencer plus tard ou contactez notre service client." );
+                        });
+                }
+            });
+            $("#table-list").on("click", ".valide-user", function (e) {
+                e.stopPropagation();
+                e.preventDefault();
+                var r = confirm("Etes vous sure de valider cet utilisateur !");
+                if (r == true) {
+                    $.post( "{{ path('valid_livreur') }}", { user_id: $(this).data('id') } )
                         .done(function( data ) {
                             location.reload();
                         })

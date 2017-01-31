@@ -36,16 +36,38 @@ class Login implements UserInterface, \Serializable
     * @ORM\Column(type="boolean",options={"default":false})
     */
     private $admin = false;
+    
+    /**
+    * @ORM\Column(type="boolean",options={"default":false})
+    */
+    private $limited = false;
 
     /**
-    * @ORM\OneToOne(targetEntity="Profil")
+    * @ORM\OneToOne(targetEntity="Profil", inversedBy="login")
     */
     private $profil;
+
+    /**
+    * @ORM\Column(type="boolean",options={"default":false})
+    */
+    private $valide = false;
+
+
+    public function getValide(){
+        return $this->valide;
+    }
+    
+    public function setValide($valide)
+    {
+        $this->valide = $valide;
+
+        return $this;
+    }
 
     public function getId(){
         return $this->id;
     }
-
+    
     public function getEmail()
     {
         return $this->email;
@@ -82,6 +104,18 @@ class Login implements UserInterface, \Serializable
         return $this;
     }
 
+    public function getLimited()
+    {
+        return $this->limited;
+    }
+
+    public function setLimited($limited)
+    {
+        $this->limited = $limited;
+
+        return $this;
+    }
+
     public function getProfil()
     {
         return $this->profil;
@@ -96,8 +130,15 @@ class Login implements UserInterface, \Serializable
 
     public function getRoles()
     {
+        if (!$this->getValide()) {
+            return [];
+        }
         if ($this->getAdmin()) {
-            return ['ROLE_ADMIN'];
+            if ($this->limited) {
+                return ['ROLE_ADMIN'];
+            } else {
+                return ['ROLE_ADMIN', 'ROLE_ADMIN_VALIDATE'];
+            }
         } else if ($this->getProfil() && $this->getProfil()->getActive()) {
             return ['ROLE_USER'];
         }

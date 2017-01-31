@@ -30,7 +30,11 @@
 
 						        <td>
 						        	{% if not facture.etat %}
+						        	{% if is_granted('ROLE_ADMIN_VALIDATE') %}
 						        	<a class="validate-facture" data-id="{{ facture.id }}" href="#"><svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg></a>
+						        	{% else %}
+						        	<svg class="stroked checkmark" style="width:35px;height:35px;"><use xlink:href="#stroked-checkmark"/></svg>
+						        	{% endif %}
 						        	{% endif %}
 						        	<a href="{{path('admin_edit_facture', {factureId: facture.id})}}"><svg class=" stroked pencil" style="width:35px;height:35px;"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#stroked-pencil"></use></svg>
 						        	</a>

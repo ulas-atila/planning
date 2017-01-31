@@ -5,6 +5,7 @@
             <div class="col-lg-12">
                 <div class="panel panel-default">
                     <div class="panel-heading">Planning</div>
+                    <div class="panel-heading"><a href="{{path('add_creneau')}}"><button class="btn btn-primary">Ajouter un creneau</button></a></div>
                     <div class="panel-body">
                         <form method="post" action="{{ path('admin_planning') }}">
                             <label style="display:inline-block;margin-right:30px;">Séléctionner un jour de la semaine</label><input type="date" name="jour" value="{{ date|date('Y-m-d') }}"> 

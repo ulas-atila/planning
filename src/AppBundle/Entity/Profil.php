@@ -106,6 +106,11 @@ class Profil
     */
     private $attribuees;
 
+    /**
+    * @ORM\OneToOne(targetEntity="Login", mappedBy="profil")
+    */
+    private $login;
+
     public function getId(){
         return $this->id;
     }
@@ -208,6 +213,10 @@ class Profil
         $this->photo = $photo;
 
         return $this;
+    }
+
+    public function getLogin(){
+        return $this->login;
     }
 
     public function getActive(){

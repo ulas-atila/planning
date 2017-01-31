@@ -4,11 +4,13 @@ namespace AppBundle\Controller;
 
 use AppBundle\Entity\Message;
 use AppBundle\Entity\Disponibilite;
+use AppBundle\Entity\Profil;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type as FormType;
 
 /**
  * @Route("/livreur")
@@ -46,6 +48,110 @@ class UserController extends Controller
         ]);
     }
 
+    /**
+     * @Route("/profil", name="edit_profil")
+     */
+    public function addLivreurAction(Request $request)
+    {
+        $login = $this->getUser();
+        $profil = $login->getProfil();
+        $previousPhoto = $profil->getPhoto();
+        $previousEmail = $profil->getEmail();
+        $profil->setDateentree(new \DateTime());
+        $form = $this->createProfilForm($profil, false);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $file = $profil->getPhoto();
+            if ($file === null) {
+                $profil->setPhoto($previousPhoto);
+            } else {
+                $fileName = md5(uniqid()).'.'.$file->guessExtension();
+                $file->move(
+                    $this->getParameter('photo_directory'),
+                    $fileName
+                );
+                $profil->setPhoto($fileName);
+            }
+
+            $em = $this->getDoctrine()->getManager();
+            
+            $em->persist($profil);
+            $password = $form->get('password')->getData();
+            if($password!= "")
+            {
+                $login = $em->getRepository('AppBundle:Login')->findOneByProfil($profil);
+                $login->setPassword($password);
+            }
+            $profil->setEmail($previousEmail);
+            $em->flush();
+
+            return $this->redirectToRoute('admin_list');
+        }
+        
+        // replace this example code with whatever you need
+        return $this->render('user/profil.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    private function createProfilForm(Profil $profil, $isNew = true)
+    {
+        $form = $this->createFormBuilder($profil)
+            ->add('nom', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Nom du livreur'],
+                'label' => 'Nom'
+            ])
+            ->add('prenom', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Prénom du livreur'],
+                'label' => 'Prénom'
+            ])
+            ->add('datedenaissance', FormType\BirthdayType::class, [
+                'attr' => ['placeholder' => 'Date de naissance'],
+                'label' => 'Date de naissance'
+            ])
+            ->add('email', FormType\EmailType::class, [
+                'attr' => ['placeholder' => 'Email du livreur', 'readonly' => !$isNew],
+                'label' => 'E-mail'
+            ])
+            ->add('adresse', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Adresse postale'],
+                'label' => 'Adresse postale du livreur'
+            ])
+            ->add('telephone', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Téléphone'],
+                'label' => 'Téléphone du livreur'
+            ])
+            ->add('villedelivraison', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'Ville de livraison'],
+                'label' => 'Ville de livraion'
+            ])
+            ->add('siret', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'SIRET'],
+                'label' => 'SIRET'
+            ])
+            ->add('rib', FormType\TextType::class, [
+                'attr' => ['placeholder' => 'RIB'],
+                'label' => 'RIB'
+            ])
+            ->add('photo', FormType\FileType::class, [
+                'attr' => ['placeholder' => 'photo'],
+                'label' => 'Photo',
+                'data_class' => null
+            ]);
+            if (!$isNew) {
+                $form->add('password', FormType\PasswordType::class, [
+                    'mapped' => false,
+                    'attr' => ['placeholder' => 'Mot de passe'],
+                    'label' => 'Mot de passe'
+                ]);
+            }
+            $form = $form->getForm();
+        ;
+
+        return $form;
+    }
 
     /**
      * @Route("/chat/ajouter", name="user_chat_add")

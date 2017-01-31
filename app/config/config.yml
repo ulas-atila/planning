@@ -40,6 +40,7 @@ twig:
     strict_variables: "%kernel.debug%"
     globals:
         photo_path: "%photo_path%"
+        site_url: "%site_url%"
 
 # Doctrine Configuration
 doctrine:
@@ -66,7 +67,9 @@ doctrine:
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
+    auth_mode: "%mailer_auth_mode%"
     host:      "%mailer_host%"
+    port:      "%mailer_port%"
     username:  "%mailer_user%"
     password:  "%mailer_password%"
     spool:     { type: memory }

@@ -21,8 +21,9 @@ parameters:
     photo_directory: "%kernel.root_dir%/../web/photo/"
     photo_path: "/photo/"
 
-    creneau_midi_debut: 11:30
-    creneau_midi_fin: 14:30
-    creneau_soir_debut: 18:30
-    creneau_soir_fin: 23:00
+    creneau_midi_debut: 05:00
+    creneau_midi_fin: 16:00
+    creneau_soir_debut: 17:00
+    creneau_soir_fin: 23:59
     admin_mail: 'no-reply@publicab.fr'
+    site_url: 'http://www.google.fr'

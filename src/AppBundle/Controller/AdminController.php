@@ -7,12 +7,14 @@ use AppBundle\Entity\Login;
 use AppBundle\Entity\Message;
 use AppBundle\Entity\Facture;
 use AppBundle\Entity\Attribuee;
+use AppBundle\Entity\Creneau;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type as FormType;
+use Symfony\Component\Form\FormError;
 
 /**
  * @Route("/admin")
@@ -113,7 +115,8 @@ class AdminController extends Controller
                 "photo" => $livreur->getPhoto() ? $this->getParameter('photo_path') . $livreur->getPhoto() : "",
                 "prenom" => $livreur->getPrenom(),
                 "nom" => $livreur->getNom(),
-                "ville" => $livreur->getVilledelivraison()
+                "ville" => $livreur->getVilledelivraison(),
+                "valide" => $livreur->getLogin()->getValide()
             ];
         }
 
@@ -168,6 +171,7 @@ class AdminController extends Controller
                 $login->setEmail($profil->getEmail());
                 $login->setPassword($this->generatePassword());
                 $login->setProfil($profil);
+                $login->setValide(true);
                 $em->persist($login);
                 $em->flush();
                 $message = \Swift_Message::newInstance()
@@ -188,6 +192,12 @@ class AdminController extends Controller
                 ;
                 $this->get('mailer')->send($message);
             } else {
+                $password = $form->get('password')->getData();
+                if($password!= "")
+                {
+                    $login = $em->getRepository('AppBundle:Login')->findOneByProfil($profil);
+                    $login->setPassword($password);
+                }
                 $profil->setEmail($previousEmail);
                 $em->flush();
             }
@@ -258,8 +268,15 @@ class AdminController extends Controller
                 'attr' => ['placeholder' => 'photo'],
                 'label' => 'Photo',
                 'data_class' => null
-            ])
-            ->getForm();
+            ]);
+            if (!$isNew) {
+                $form->add('password', FormType\PasswordType::class, [
+                    'mapped' => false,
+                    'attr' => ['placeholder' => 'Mot de passe'],
+                    'label' => 'Mot de passe'
+                ]);
+            }
+            $form = $form->getForm();
         ;
 
         return $form;
@@ -285,6 +302,47 @@ class AdminController extends Controller
         $profil->setActive(false);
 
         $em = $this->getDoctrine()->getEntityManager()->flush();
+
+        return new Response("ok", 200);
+    }
+
+    /**
+     * @Route("/livreur/valider", name="valid_livreur")
+     * @Method({"POST"})
+     */
+    public function validLivreurAction(Request $request)
+    {
+        $user_id = $request->request->get('user_id');
+
+        if ($user_id == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+
+        $profil = $this->getDoctrine()->getRepository('AppBundle:Profil')->find($user_id);
+        if ($profil == null) {
+            throw $this->createNotFoundException('User does not exist');
+        }
+
+        $profil->getLogin()->setValide(true);
+
+        $em = $this->getDoctrine()->getEntityManager()->flush();
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Validation du compte')
+            ->setFrom($this->getParameter('admin_mail'))
+            ->setTo($profil->getEmail())
+            ->setBody(
+                $this->renderView(
+                    'admin/valid_email.html.twig',
+                    array(
+                        'nom' => $profil->getNom(),
+                        'prenom' => $profil->getPrenom()
+                    )
+                ),
+                'text/html'
+            )
+        ;
+        $this->get('mailer')->send($message);
 
         return new Response("ok", 200);
     }
@@ -337,11 +395,24 @@ class AdminController extends Controller
             $em = $this->getDoctrine()->getEntityManager();
             $attribuees = $this->getDoctrine()->getRepository('AppBundle:Attribuee')->findForAdmin($dateDebut, $dateFin);
             $profils = $this->getDoctrine()->getRepository('AppBundle:Profil')->getById($request->request->get('users', []));
+            $deleteds = [];
+            $addeds = [];
+            $ids = [];
             foreach ($attribuees as $attribuee) {
                 $profilId = $attribuee->getProfil()->getId();
                 if (!array_key_exists($profilId, $profils)) {
                     $em->remove($attribuee);
                     unset($paramsAttribuees[$creneau][$day][$profilId]);
+                    if (!isset($deleteds[$profilId])) {
+                        $deleteds[$profilId] = [
+                            "nom" => $attribuee->getProfil()->getNom(),
+                            "prenom" => $attribuee->getProfil()->getPrenom(),
+                            "email" => $attribuee->getProfil()->getEmail(),
+                            "horaires" => []
+                        ];
+                        $ids[$profilId] = true;
+                    }
+                    $deleteds[$profilId]["horaires"][] = ['debut' => $attribuee->getDateDebut(), 'fin' => $attribuee->getDateFin()];
                 }
             }
             foreach ($profils as $profil) {
@@ -352,9 +423,39 @@ class AdminController extends Controller
                     $attribuee->setProfil($profil);
                     $em->persist($attribuee);
                     $paramsAttribuees[$creneau][$day][$profil->getId()] = ['prenom' => $profil->getPrenom(), 'nom' => $profil->getNom(), 'id' => $profil->getId()];
+                    if (!isset($addeds[$profil->getId()])) {
+                        $addeds[$profil->getId()] = [
+                            "nom" => $attribuee->getProfil()->getNom(),
+                            "prenom" => $attribuee->getProfil()->getPrenom(),
+                            "email" => $attribuee->getProfil()->getEmail(),
+                            "horaires" => []
+                        ];
+                        $ids[$profil->getId()] = true;
+                    }
+                    $addeds[$profil->getId()]["horaires"][] = ['debut' => $attribuee->getDateDebut(), 'fin' => $attribuee->getDateFin()];
                 }
             }
             $em->flush();
+            foreach ($ids as $id => $value) {
+                $message = \Swift_Message::newInstance()
+                    ->setSubject('Inscription')
+                    ->setFrom($this->getParameter('admin_mail'))
+                    ->setTo(isset($addeds[$id]) ? $addeds[$id]['email'] : $deleteds[$id]['email'])
+                    ->setBody(
+                        $this->renderView(
+                            'admin/planning_email.html.twig',
+                            array(
+                                'added' => isset($addeds[$id]) ? $addeds[$id]['horaires'] : null,
+                                'deleted' => isset($deleteds[$id]) ? $deleteds[$id]['horaires'] : null,
+                                'nom' => isset($addeds[$id]) ? $addeds[$id]['prenom'] : $deleteds[$id]['prenom'],
+                                'prenom' => isset($addeds[$id]) ? $addeds[$id]['nom'] : $deleteds[$id]['nom']
+                            )
+                        ),
+                        'text/html'
+                    )
+                ;
+                $this->get('mailer')->send($message);
+            }
         }
 
         // replace this example code with whatever you need
@@ -378,12 +479,7 @@ class AdminController extends Controller
 
     private function convertDisponibilitesToParams($disponibilites, $dateDebutSemaine)
     {
-        $creneaux = [
-            ['11H30', '14H30'],
-            ['18H30', '19H30'],
-            ['19H30', '22H30'],
-            ['20H00', '23H00']
-        ];
+        $creneaux = $this->getDoctrine()->getRepository('AppBundle:Creneau')->findFomatted();
 
         $data = [];
 
@@ -423,6 +519,86 @@ class AdminController extends Controller
     private function isBetween($sujet, $dateDebut, $dateFin)
     {
         return $sujet >= $dateDebut && $sujet <= $dateFin;
+    }
+
+    /**
+     * @Route("/creneau/ajouter", name="add_creneau")
+     */
+    public function creneauAction(Request $request)
+    {
+        $creneau = new Creneau();
+
+        $form = $this->createCreneauForm($creneau);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $em = $this->getDoctrine()->getEntityManager();
+            $exist = $em->getRepository('AppBundle:Creneau')->findOneBy([
+                'heureDebut' => $creneau->getHeureDebut(),
+                'heureFin' => $creneau->getHeureFin(),
+                'minuteDebut' => $creneau->getMinuteDebut(),
+                'minuteFin' => $creneau->getMinuteFin(),
+            ]);
+            if ($exist !== null) {
+                $form->addError(new FormError('Un creneau similaire existe déjà'));
+            } else {
+                $em->persist($creneau);
+                $em->flush();
+
+                return $this->redirectToRoute('admin_planning');
+            }
+        }
+        return $this->render('admin/add_creneau.html.twig', [
+            "form" => $form->createView()
+        ]);
+    }
+
+    private function getArray($start, $stop)
+    {
+        $choices = [];
+        for ($i=$start; $i <= $stop; $i++) { 
+            $choices[$i] = $i;
+        }
+
+        return $choices;
+    }
+
+    private function createCreneauForm(Creneau $creneau)
+    {
+        $form = $this->createFormBuilder($creneau)
+            ->add('heureDebut', FormType\ChoiceType::class, [
+                'attr' => ['placeholder' => 'Heure de début'],
+                'label' => 'Heure de début',
+                'expanded' => false,
+                'multiple' => false,
+                'choices' => $this->getArray(0,23)
+            ])
+            ->add('minuteDebut', FormType\ChoiceType::class, [
+                'attr' => ['placeholder' => 'Minute de début'],
+                'label' => 'Minute de début',
+                'expanded' => false,
+                'multiple' => false,
+                'choices' => $this->getArray(0,59)
+            ])
+            ->add('heureFin', FormType\ChoiceType::class, [
+                'attr' => ['placeholder' => 'Heure de fin'],
+                'label' => 'Heure de fin',
+                'expanded' => false,
+                'multiple' => false,
+                'choices' => $this->getArray(0,23)
+            ])
+            ->add('minuteFin', FormType\ChoiceType::class, [
+                'attr' => ['placeholder' => 'Minute de fin'],
+                'label' => 'Minute de fin',
+                'expanded' => false,
+                'multiple' => false,
+                'choices' => $this->getArray(0,59)
+            ]);
+            $form = $form->getForm();
+        ;
+
+        return $form;
     }
 
     /**

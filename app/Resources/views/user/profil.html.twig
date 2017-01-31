@@ -1,0 +1,44 @@
+{% extends 'user/base.html.twig' %}
+
+{% form_theme form _self %}
+
+{%- block form_row -%}
+    <div class="form-group {% if errors|length > 0 %}has-error{% endif %}">
+        {{- form_label(form, null, {'label_attr': {'class': 'col-md-3 control-label'}}) -}}
+        <div class="col-md-9">
+            {{- form_widget(form, {'attr': {'class': 'form-control'}}) -}}
+        </div>
+        <div class="col-md-offset-3 col-md-9 {% if errors|length > 0 %}help-block{% endif %}">
+            {{- form_errors(form) -}}
+        </div>
+    </div>
+{%- endblock form_row -%}
+
+{% block _form_photo_widget %}
+    {% if form.vars.data is not null %}
+        <img src="{{ asset(photo_path ~ form.vars.data) }}" width="40" height="40" />
+    {% endif %}
+    {{ block('form_widget_simple') }}
+{% endblock %}
+
+{% block content %}
+    <div class="row">
+            <div class="col-lg-12">
+                <div class="panel panel-default">
+                    <div class="panel-heading">Profil</div>
+                    <div class="panel-body">
+                        {{ form_start(form, {'attr': {'class': 'form-horizontal', 'novalidate': 'novalidate'}}) }}
+                            <fieldset>
+                                {{ form_widget(form) }}
+                                <div class="form-group">
+                                    <div class="col-md-12 widget-right">
+                                        <button type="submit" class="btn btn-default btn-md pull-right">Ajouter</button>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div><!--/.row-->  
+{% endblock %}
